@@ -35,7 +35,7 @@ const UploadImageForm = () => {
           marginTop: 10,
         }}
       >
-        <Title level={2}>Upload Image</Title>
+        <Title level={3}>Upload Image</Title>
       </div>
       <Form
         labelCol={{ span: 5 }}

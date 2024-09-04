@@ -1,4 +1,5 @@
 import React from "react";
+import ImageGallery from "../components/ImageGallery/ImageGallery";
 import UploadImageForm from "../components/UploadImageForm/UploadImageForm";
 import MainLayout from "../layout/MainLayout";
 
@@ -8,7 +9,7 @@ const MainRoutes = {
   children: [
     {
       path: "/",
-      element: <div>hellow</div>,
+      element: <ImageGallery />,
     },
     {
       path: "/upload_image",

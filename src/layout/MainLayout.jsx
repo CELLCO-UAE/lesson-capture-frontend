@@ -1,7 +1,9 @@
-import { DownOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Dropdown, Layout, Menu, theme } from "antd";
-import React, { useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { DownOutlined, LeftOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, Dropdown, FloatButton, Grid, Layout, Menu, theme } from "antd";
+import { useState } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+
+const { useBreakpoint } = Grid;
 
 const { Header, Content } = Layout;
 
@@ -15,9 +17,12 @@ const MainLayout = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedItem, setSelectedItem] = useState("Date Range");
   const [selectedCategory, setSelectedCategory] = useState("Select a category");
   const [openUploadImageForm, setOpenUploadImageForm] = useState(false);
+  const screens = useBreakpoint();
+  console.log("screens", screens);
 
   const handleMenuClick = (e) => {
     setSelectedItem(` ${e.key}`);
@@ -76,7 +81,11 @@ const MainLayout = () => {
   );
 
   const handleUploadImage = () => {
-    navigate("/upload_image");
+    navigate("/upload_image", {
+      state: {
+        from_upload_image: true,
+      },
+    });
   };
 
   return (
@@ -93,14 +102,16 @@ const MainLayout = () => {
           width: "100%",
           background: "#fff",
           display: "flex",
+          flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
+          padding: screens.xs ? "0 8px" : "0 50px",
         }}
       >
         <div
           style={{
             fontWeight: "bold",
-            fontSize: "2rem",
+            fontSize: screens.xs ? 20 : 30,
             cursor: "pointer",
           }}
           onClick={() => navigate("/")}
@@ -125,7 +136,7 @@ const MainLayout = () => {
             gap: ".8rem",
           }}
         >
-          <Button
+          {/* <Button
             type="primary"
             size="large"
             icon={<PlusOutlined />}
@@ -137,52 +148,99 @@ const MainLayout = () => {
             }}
           >
             Upload Image
-          </Button>
+          </Button> */}
           <Button
             size="medium"
             style={{
               border: "1px solid #04befe",
             }}
+            onClick={() => navigate("/login")}
           >
-            Register
+            Log in
           </Button>
         </div>
       </Header>
+      <FloatButton
+        icon={<PlusOutlined color="#fff" />}
+        tooltip={<div>Upload Image</div>}
+        type="default"
+        style={{
+          insetInlineEnd: screens.lg
+            ? 94
+            : screens.md
+            ? 24
+            : screens.sm
+            ? 24
+            : screens.xs
+            ? 12
+            : 12,
+        }}
+        className="custom-float-button"
+        onClick={() => {
+          handleUploadImage();
+        }}
+      />
       <Content
         style={{
-          padding: "0 48px",
+          padding: screens.xs ? "0 8px" : "0 48px",
+          height: "100vh",
         }}
       >
         <div
           style={{
             display: "flex",
-            gap: 10,
+            flexDirection: {
+              xs: "column",
+              sm: "row",
+              md: "row",
+            },
           }}
         >
-          <div
-            style={{
-              marginTop: 10,
-              marginBottom: 10,
-            }}
-          >
-            <Dropdown overlay={menu} trigger={["click"]}>
-              <Button>
-                {selectedItem} <DownOutlined />
+          {!location?.state?.from_upload_image && (
+            <div
+              style={{
+                display: "flex",
+                gap: 10,
+              }}
+            >
+              <div
+                style={{
+                  marginTop: 10,
+                  marginBottom: 10,
+                }}
+              >
+                <Dropdown overlay={menu} trigger={["click"]}>
+                  <Button>
+                    {selectedItem} <DownOutlined />
+                  </Button>
+                </Dropdown>
+              </div>
+              <div
+                style={{
+                  marginTop: 10,
+                  marginBottom: 10,
+                }}
+              >
+                <Dropdown overlay={categories} trigger={["click"]}>
+                  <Button>
+                    {selectedCategory} <DownOutlined />
+                  </Button>
+                </Dropdown>
+              </div>
+            </div>
+          )}
+          {location?.state?.from_upload_image && (
+            <div
+              style={{
+                marginTop: 10,
+                marginBottom: 10,
+              }}
+            >
+              <Button onClick={() => navigate(-1)}>
+                <LeftOutlined />
               </Button>
-            </Dropdown>
-          </div>
-          <div
-            style={{
-              marginTop: 10,
-              marginBottom: 10,
-            }}
-          >
-            <Dropdown overlay={categories} trigger={["click"]}>
-              <Button>
-                {selectedCategory} <DownOutlined />
-              </Button>
-            </Dropdown>
-          </div>
+            </div>
+          )}
         </div>
         <div
           style={{
@@ -190,6 +248,9 @@ const MainLayout = () => {
             minHeight: 380,
             background: colorBgContainer,
             borderRadius: borderRadiusLG,
+
+            marginTop: location?.state?.from_upload_image ? 10 : 0,
+            marginBottom: location?.state?.from_upload_image ? 10 : 0,
           }}
         >
           <Outlet />

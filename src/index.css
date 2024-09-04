@@ -8,3 +8,44 @@ body {
 #root {
   /* padding: 24px; */
 }
+
+:where(.css-dev-only-do-not-override-vn1oyg).ant-float-btn-default
+  .ant-float-btn-body {
+  background: linear-gradient(135deg, #04befe, #6253e1);
+  border: none !important;
+}
+:where(.css-dev-only-do-not-override-vn1oyg).ant-float-btn-default
+  .ant-float-btn-body
+  .ant-float-btn-content
+  .ant-float-btn-icon {
+  color: #fff;
+}
+
+.custom-float-button {
+  background: linear-gradient(135deg, #6253e1, #04befe);
+  height: 70px;
+  width: 70px;
+  border: none;
+  animation: scale-animation 2s infinite;
+  transition: background 0.3s ease;
+}
+
+.custom-float-button:hover {
+  background: linear-gradient(135deg, #04befe, #6253e1);
+}
+
+:where(.css-dev-only-do-not-override-vn1oyg).ant-layout-header {
+  padding: 0;
+}
+:where(.css-dev-only-do-not-override-vn1oyg).ant-card .ant-card-body {
+  padding: 0;
+}
+@keyframes scale-animation {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2); /* Scale up to 120% of the original size */
+  }
+}
