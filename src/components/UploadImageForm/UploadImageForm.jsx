@@ -22,13 +22,7 @@ const normFile = (e) => {
 
 const UploadImageForm = () => {
   return (
-    <div
-    // style={{
-    //   display: "flex",
-    //   justifyContent: "center",
-    //   width: "100%",
-    // }}
-    >
+    <div>
       <div
         style={{
           marginBottom: 50,
@@ -41,7 +35,6 @@ const UploadImageForm = () => {
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
         layout="horizontal"
-        // disabled={componentDisabled}
         style={{ maxWidth: 600 }}
       >
         <Form.Item label="Name">

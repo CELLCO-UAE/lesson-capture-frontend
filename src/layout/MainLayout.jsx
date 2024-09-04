@@ -1,7 +1,17 @@
 import { DownOutlined, LeftOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Dropdown, FloatButton, Grid, Layout, Menu, theme } from "antd";
+import {
+  Button,
+  Dropdown,
+  FloatButton,
+  Grid,
+  Image,
+  Layout,
+  Menu,
+  theme,
+} from "antd";
 import { useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import logo1 from "../assets/lesson-capture-logo.svg";
 
 const { useBreakpoint } = Grid;
 
@@ -20,9 +30,7 @@ const MainLayout = () => {
   const location = useLocation();
   const [selectedItem, setSelectedItem] = useState("Date Range");
   const [selectedCategory, setSelectedCategory] = useState("Select a category");
-  const [openUploadImageForm, setOpenUploadImageForm] = useState(false);
   const screens = useBreakpoint();
-  console.log("screens", screens);
 
   const handleMenuClick = (e) => {
     setSelectedItem(` ${e.key}`);
@@ -113,21 +121,16 @@ const MainLayout = () => {
             fontWeight: "bold",
             fontSize: screens.xs ? 20 : 30,
             cursor: "pointer",
+            padding: 0,
+            display: "flex",
+            alignItems: "center",
+            height: "100%",
           }}
           onClick={() => navigate("/")}
         >
-          Lesson Capture
+          <Image src={logo1} preview={false} />
         </div>
-        {/* <Menu
-          theme="light"
-          mode="horizontal"
-          defaultSelectedKeys={["2"]}
-          items={items}
-          style={{
-            flex: 1,
-            justifyContent: "flex-end",
-          }}
-        /> */}
+
         <div
           style={{
             display: "flex",
@@ -136,19 +139,6 @@ const MainLayout = () => {
             gap: ".8rem",
           }}
         >
-          {/* <Button
-            type="primary"
-            size="large"
-            icon={<PlusOutlined />}
-            style={{
-              background: "linear-gradient(135deg, #6253e1, #04befe)",
-            }}
-            onClick={() => {
-              handleUploadImage();
-            }}
-          >
-            Upload Image
-          </Button> */}
           <Button
             size="medium"
             style={{
