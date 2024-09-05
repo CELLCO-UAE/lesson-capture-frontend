@@ -1,12 +1,28 @@
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Flex, Form, Input, Typography } from "antd";
-import { Link } from "react-router-dom";
-
+import Cookies from "js-cookie";
+import { Link, useNavigate } from "react-router-dom";
+import { usePostLoginCredentialsMutation } from "../../redux/features/authSlice/authApiSlice";
+import { Notify } from "../../utilities/toast/toast";
 const { Title } = Typography;
 
 const LoginForm = () => {
-  const onFinish = (values) => {
+  const navigate = useNavigate();
+  const [postLoginCredentials] = usePostLoginCredentialsMutation();
+
+  const onFinish = async (values) => {
     console.log("Received values of form: ", values);
+    const data = {
+      username: values.username,
+      password: values.password,
+    };
+    const response = await postLoginCredentials(data);
+
+    if (response.data) {
+      Cookies.set("authToken", response.data.access, { expires: 7 });
+      Notify({ message: "Logged in successfully!" });
+      navigate("/");
+    }
   };
 
   return (

@@ -12,6 +12,7 @@ import {
 import { useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import logo1 from "../assets/lesson-capture-logo.svg";
+import { useLazyGetCategoriesNamesQuery } from "../redux/features/categorySlice/categoryApiSlice";
 
 const { useBreakpoint } = Grid;
 
@@ -32,10 +33,18 @@ const MainLayout = () => {
   const [selectedCategory, setSelectedCategory] = useState("Select a category");
   const screens = useBreakpoint();
 
+  const [getCategoriesNames, { data: categoryNameList }] =
+    useLazyGetCategoriesNamesQuery();
+
+  console.log("lcoa", location);
+
   const handleMenuClick = (e) => {
+    getCategoriesNames();
     setSelectedItem(` ${e.key}`);
   };
   const handleCategoryClick = (e) => {
+    console.log(e);
+    // getCategoriesNames();
     setSelectedCategory(` ${e.key}`);
   };
 
@@ -62,17 +71,6 @@ const MainLayout = () => {
     },
   ];
 
-  const categoriesList = [
-    {
-      label: "Category 1",
-      value: "category 1",
-    },
-    {
-      label: "Category 2",
-      value: "category 2",
-    },
-  ];
-
   const menu = (
     <Menu onClick={handleMenuClick}>
       {dateRanges.map((dateRange) => {
@@ -82,8 +80,8 @@ const MainLayout = () => {
   );
   const categories = (
     <Menu onClick={handleCategoryClick}>
-      {categoriesList.map((category) => {
-        return <Menu.Item key={category.value}>{category.label}</Menu.Item>;
+      {categoryNameList?.map((category) => {
+        return <Menu.Item key={category.id}>{category.name}</Menu.Item>;
       })}
     </Menu>
   );
@@ -144,6 +142,21 @@ const MainLayout = () => {
             style={{
               border: "1px solid #04befe",
             }}
+            onClick={() =>
+              navigate("/create_category", {
+                state: {
+                  from_create_category: true,
+                },
+              })
+            }
+          >
+            Add Category
+          </Button>
+          <Button
+            size="medium"
+            style={{
+              border: "1px solid #04befe",
+            }}
             onClick={() => navigate("/login")}
           >
             Log in
@@ -186,40 +199,46 @@ const MainLayout = () => {
             },
           }}
         >
-          {!location?.state?.from_upload_image && (
-            <div
-              style={{
-                display: "flex",
-                gap: 10,
-              }}
-            >
+          {!location?.state?.from_upload_image &&
+            !location?.state?.from_create_category && (
               <div
                 style={{
-                  marginTop: 10,
-                  marginBottom: 10,
+                  display: "flex",
+                  gap: 10,
                 }}
               >
-                <Dropdown overlay={menu} trigger={["click"]}>
-                  <Button>
-                    {selectedItem} <DownOutlined />
-                  </Button>
-                </Dropdown>
+                <div
+                  style={{
+                    marginTop: 10,
+                    marginBottom: 10,
+                  }}
+                >
+                  <Dropdown overlay={menu} trigger={["click"]}>
+                    <Button>
+                      {selectedItem} <DownOutlined />
+                    </Button>
+                  </Dropdown>
+                </div>
+                <div
+                  style={{
+                    marginTop: 10,
+                    marginBottom: 10,
+                  }}
+                >
+                  <Dropdown
+                    overlay={categories}
+                    trigger={["click"]}
+                    onClick={() => getCategoriesNames()}
+                  >
+                    <Button>
+                      {selectedCategory} <DownOutlined />
+                    </Button>
+                  </Dropdown>
+                </div>
               </div>
-              <div
-                style={{
-                  marginTop: 10,
-                  marginBottom: 10,
-                }}
-              >
-                <Dropdown overlay={categories} trigger={["click"]}>
-                  <Button>
-                    {selectedCategory} <DownOutlined />
-                  </Button>
-                </Dropdown>
-              </div>
-            </div>
-          )}
-          {location?.state?.from_upload_image && (
+            )}
+          {(location?.state?.from_upload_image ||
+            location?.state?.from_create_category) && (
             <div
               style={{
                 marginTop: 10,

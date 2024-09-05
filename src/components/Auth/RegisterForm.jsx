@@ -1,5 +1,11 @@
 import { Button, Checkbox, Form, Input, Select, Typography } from "antd";
-import { Link } from "react-router-dom";
+import Cookies from "js-cookie";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  usePostLoginCredentialsMutation,
+  usePostUserCredentialsMutation,
+} from "../../redux/features/authSlice/authApiSlice";
+import { Notify } from "../../utilities/toast/toast";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -36,8 +42,35 @@ const tailFormItemLayout = {
 };
 const RegisterForm = () => {
   const [form] = Form.useForm();
-  const onFinish = (values) => {
-    console.log("Received values of form: ", values);
+  const navigate = useNavigate();
+
+  const [postUserCredentials] = usePostUserCredentialsMutation();
+  const [postLoginCredentials] = usePostLoginCredentialsMutation();
+
+  const onFinish = async (values) => {
+    const data = {
+      first_name: values.first_name,
+      last_name: values.last_name,
+      username: values.email,
+      password: values.password,
+      phone: values.phone,
+    };
+    const response = await postUserCredentials(data);
+
+    if (response.data) {
+      const loginResponse = await postLoginCredentials({
+        username: response.data?.username,
+        password: values.password,
+      });
+      if (loginResponse.data) {
+        console.log(loginResponse);
+        Cookies.set("authToken", loginResponse.data.access, {
+          expires: 7,
+        });
+        Notify({ message: "Account is created successfully!" });
+      }
+      navigate("/");
+    }
   };
   const prefixSelector = (
     <Form.Item name="prefix" noStyle>
@@ -46,11 +79,14 @@ const RegisterForm = () => {
           width: 70,
         }}
       >
-        <Option value="86">+86</Option>
-        <Option value="87">+87</Option>
+        <Option value="971">+971</Option>
       </Select>
     </Form.Item>
   );
+
+  const handleRegisterData = (e) => {
+    console.log(e.target.value);
+  };
 
   return (
     <div
@@ -69,7 +105,7 @@ const RegisterForm = () => {
         onFinish={onFinish}
         initialValues={{
           residence: ["zhejiang", "hangzhou", "xihu"],
-          prefix: "86",
+          prefix: "971",
         }}
         style={{
           maxWidth: 600,
@@ -85,6 +121,32 @@ const RegisterForm = () => {
           CREATE AN ACCOUNT
         </Title>
         <Form.Item
+          name="first_name"
+          label="First Name"
+          rules={[
+            {
+              required: true,
+              message: "Please input your first name!",
+            },
+          ]}
+          onChange={(e) => handleRegisterData(e)}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name="last_name"
+          label="Last Name"
+          rules={[
+            {
+              required: true,
+              message: "Please input your last name!",
+            },
+          ]}
+          onChange={(e) => handleRegisterData(e)}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
           name="email"
           label="E-mail"
           rules={[
@@ -97,6 +159,7 @@ const RegisterForm = () => {
               message: "Please input your E-mail!",
             },
           ]}
+          onChange={(e) => handleRegisterData(e)}
         >
           <Input />
         </Form.Item>
@@ -111,6 +174,7 @@ const RegisterForm = () => {
             },
           ]}
           hasFeedback
+          onChange={(e) => handleRegisterData(e)}
         >
           <Input.Password />
         </Form.Item>
@@ -149,6 +213,7 @@ const RegisterForm = () => {
               message: "Please input your phone number!",
             },
           ]}
+          onChange={(e) => handleRegisterData(e)}
         >
           <Input
             addonBefore={prefixSelector}
@@ -156,23 +221,6 @@ const RegisterForm = () => {
               width: "100%",
             }}
           />
-        </Form.Item>
-
-        <Form.Item
-          name="gender"
-          label="Gender"
-          rules={[
-            {
-              required: true,
-              message: "Please select gender!",
-            },
-          ]}
-        >
-          <Select placeholder="select your gender">
-            <Option value="male">Male</Option>
-            <Option value="female">Female</Option>
-            <Option value="other">Other</Option>
-          </Select>
         </Form.Item>
 
         <Form.Item

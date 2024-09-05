@@ -8,19 +8,56 @@ import {
   Typography,
   Upload,
 } from "antd";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useLazyGetCategoriesNamesQuery } from "../../redux/features/categorySlice/categoryApiSlice";
+import { usePostImageGalleryDataMutation } from "../../redux/features/imageGallerySlice/imageGalleryApiSlice";
+import { Notify } from "../../utilities/toast/toast";
 
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 const { Title } = Typography;
 
-const normFile = (e) => {
-  if (Array.isArray(e)) {
-    return e;
-  }
-  return e?.fileList;
-};
-
 const UploadImageForm = () => {
+  const navigate = useNavigate();
+  const [file, setFile] = useState();
+
+  const [postImageGalleryData] = usePostImageGalleryDataMutation();
+  const [getCategoriesNames, { data: categoryNameList }] =
+    useLazyGetCategoriesNamesQuery();
+
+  console.log("ca", categoryNameList);
+
+  const normFile = (e) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    console.log(e?.fileList);
+    setFile(e?.fileList[0]);
+    return e?.fileList;
+  };
+
+  const onFinish = async (values) => {
+    console.log("values", values.image?.originalFileObj);
+    console.log("values image", values.image[0].originFileObj);
+    const formData = new FormData();
+    formData.append("title", values.title);
+    formData.append("category", values.category);
+
+    if (file) {
+      formData.append("image", values.image[0].originFileObj);
+    }
+
+    console.log(formData);
+
+    const response = await postImageGalleryData(formData);
+
+    if (response.data) {
+      Notify({ message: "Data uploaded successfully!" });
+      navigate("/");
+    }
+  };
+
   return (
     <div>
       <div
@@ -36,13 +73,41 @@ const UploadImageForm = () => {
         wrapperCol={{ span: 15 }}
         layout="horizontal"
         style={{ maxWidth: 600 }}
+        onFinish={onFinish}
       >
-        <Form.Item label="Name">
+        <Form.Item
+          label="Title"
+          name="title"
+          rules={[
+            {
+              required: true,
+              message: "Please input your title!",
+            },
+          ]}
+        >
           <Input />
         </Form.Item>
-        <Form.Item label="Select Category">
+        <Form.Item
+          label="Select Category"
+          name="category"
+          onClick={() => {
+            getCategoriesNames();
+          }}
+          rules={[
+            {
+              required: true,
+              message: "Please select a category!",
+            },
+          ]}
+        >
           <Select>
-            <Select.Option value="demo">Category 1</Select.Option>
+            {categoryNameList?.map((category) => {
+              return (
+                <Select.Option key={category?.id} value={category?.id}>
+                  {category?.name}
+                </Select.Option>
+              );
+            })}
           </Select>
         </Form.Item>
 
@@ -50,8 +115,20 @@ const UploadImageForm = () => {
           label="Upload"
           valuePropName="fileList"
           getValueFromEvent={normFile}
+          name="image"
+          rules={[
+            {
+              required: true,
+              message: "Please attach an image!",
+            },
+          ]}
         >
-          <Upload action="/upload.do" listType="picture-card">
+          <Upload
+            // action="/upload.do"
+            listType="picture-card"
+            maxCount={1}
+            multiple
+          >
             <button style={{ border: 0, background: "none" }} type="button">
               <PlusOutlined />
               <div style={{ marginTop: 8 }}>Upload</div>
