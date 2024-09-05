@@ -19,7 +19,7 @@
 
 @media (max-width: 600px) {
   .image-gallery {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
   }
 }
 

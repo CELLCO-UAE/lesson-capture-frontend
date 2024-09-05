@@ -1,6 +1,5 @@
 import { Image } from "antd";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { MOCK_DATA } from "../../assets/MOCK_DATA";
 import { useGetImageGalleryDataQuery } from "../../redux/features/imageGallerySlice/imageGalleryApiSlice";
 import { setImageGalleryData } from "../../redux/features/imageGallerySlice/imageGallerySlice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
@@ -21,6 +20,7 @@ const ImageGallery = () => {
   const { data: imageGalleryAllData } = useGetImageGalleryDataQuery(
     {
       page: page,
+      user: 17,
     },
     {
       refetchOnArgsChange: true,
@@ -54,14 +54,18 @@ const ImageGallery = () => {
             console.log(`current index: ${current}, prev index: ${prev}`),
         }}
       >
-        {MOCK_DATA.map((item, index) => (
+        {imageGalleryData?.results?.map((item, index) => (
           <div key={index}>
             <ImageCard
               //   width={200}
-              src={item.imageUrl} // Assuming your MOCK_DATA has imageUrl
+              src={item.image} // Assuming your MOCK_DATA has imageUrl
               alt={`Image ${index}`}
               data={item}
-              ref={MOCK_DATA.length === index + 1 ? lastPostElementRef : null}
+              ref={
+                imageGalleryData?.results?.length === index + 1
+                  ? lastPostElementRef
+                  : null
+              }
             />
           </div>
         ))}

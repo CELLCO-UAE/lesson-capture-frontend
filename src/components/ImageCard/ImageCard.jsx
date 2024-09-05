@@ -30,14 +30,32 @@ const ImageCard = ({ src, alt, data }) => {
           justifyContent: "space-between",
         }}
       >
-        <Title
-          level={5}
+        <div
           style={{
-            margin: "10px 5px",
+            display: "flex",
+            flexDirection: "column",
           }}
         >
-          {data?.name}
-        </Title>
+          <Title
+            level={5}
+            style={{
+              margin: "15px 5px 0",
+              color: "gray",
+              fontSize: "11px",
+            }}
+          >
+            {data?.category_name}
+          </Title>
+          <Title
+            level={5}
+            style={{
+              margin: "0 5px 15px",
+              fontWeight: "bold",
+            }}
+          >
+            {data?.title}
+          </Title>
+        </div>
         <div
           style={{
             display: "flex",
@@ -61,7 +79,7 @@ const ImageCard = ({ src, alt, data }) => {
               fontWeight: "bold",
             }}
           >
-            {data?.uploaded_by}
+            {data?.user_fullname}
           </Title>
         </div>
       </div>

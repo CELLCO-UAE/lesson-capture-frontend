@@ -1,5 +1,14 @@
-import { DownOutlined, LeftOutlined, PlusOutlined } from "@ant-design/icons";
 import {
+  FolderAddOutlined,
+  LeftOutlined,
+  LogoutOutlined,
+  MoreOutlined,
+  PlusOutlined,
+  SettingOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import {
+  Avatar,
   Button,
   Dropdown,
   FloatButton,
@@ -7,21 +16,21 @@ import {
   Image,
   Layout,
   Menu,
+  Modal,
+  Select,
   theme,
 } from "antd";
+import Cookies from "js-cookie";
 import { useState } from "react";
+import { IoFilterOutline } from "react-icons/io5";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import logo1 from "../assets/lesson-capture-logo.svg";
 import { useLazyGetCategoriesNamesQuery } from "../redux/features/categorySlice/categoryApiSlice";
+import { useLazyGetUserNamesQuery } from "../redux/features/globalSlice/globalApiSlice";
 
 const { useBreakpoint } = Grid;
 
 const { Header, Content } = Layout;
-
-const items = new Array(3).fill(null).map((_, index) => ({
-  key: String(index + 1),
-  label: `nav ${index + 1}`,
-}));
 
 const MainLayout = () => {
   const {
@@ -31,22 +40,25 @@ const MainLayout = () => {
   const location = useLocation();
   const [selectedItem, setSelectedItem] = useState("Date Range");
   const [selectedCategory, setSelectedCategory] = useState("Select a category");
+  const [uploadedBy, setUploadedBy] = useState("Uploaded By");
   const screens = useBreakpoint();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const token = Cookies.get("authToken");
 
   const [getCategoriesNames, { data: categoryNameList }] =
     useLazyGetCategoriesNamesQuery();
-
-  console.log("lcoa", location);
-
-  const handleMenuClick = (e) => {
-    getCategoriesNames();
-    setSelectedItem(` ${e.key}`);
-  };
-  const handleCategoryClick = (e) => {
-    console.log(e);
-    // getCategoriesNames();
-    setSelectedCategory(` ${e.key}`);
-  };
+  const [getUserNames, { data: userNamesList }] = useLazyGetUserNamesQuery();
 
   const dateRanges = [
     {
@@ -72,19 +84,75 @@ const MainLayout = () => {
   ];
 
   const menu = (
-    <Menu onClick={handleMenuClick}>
-      {dateRanges.map((dateRange) => {
-        return <Menu.Item key={dateRange.value}>{dateRange.label}</Menu.Item>;
-      })}
+    <Menu>
+      {screens.xs && token && (
+        <Menu.Item
+          key="4"
+          icon={<FolderAddOutlined />}
+          onClick={() =>
+            navigate("/create_category", {
+              state: {
+                from_create_category: true,
+              },
+            })
+          }
+        >
+          Add Category
+        </Menu.Item>
+      )}
+      {token && (
+        <Menu.Item key="1" icon={<UserOutlined />}>
+          Profile
+        </Menu.Item>
+      )}
+      {token && (
+        <Menu.Item key="2" icon={<SettingOutlined />}>
+          Settings
+        </Menu.Item>
+      )}
+      {token && (
+        <Menu.Item
+          key="3"
+          icon={<LogoutOutlined />}
+          onClick={() => {
+            Cookies.remove("authToken"), navigate("/");
+          }}
+        >
+          Logout
+        </Menu.Item>
+      )}
+      {!token && (
+        <Menu.Item
+          key="3"
+          icon={<LogoutOutlined />}
+          onClick={() => {
+            navigate("/login");
+          }}
+        >
+          Log in
+        </Menu.Item>
+      )}
     </Menu>
   );
-  const categories = (
-    <Menu onClick={handleCategoryClick}>
-      {categoryNameList?.map((category) => {
-        return <Menu.Item key={category.id}>{category.name}</Menu.Item>;
-      })}
-    </Menu>
+
+  const AvatarMenu = () => (
+    <Dropdown overlay={menu} trigger={["click"]} placement="bottomRight">
+      <Avatar style={{ backgroundColor: "#87d068" }} icon={<UserOutlined />} />
+    </Dropdown>
   );
+
+  const handleChangeDateRange = (value) => {
+    console.log("e", value);
+    setSelectedItem(value);
+  };
+  const handleChange = (value) => {
+    console.log("e", value);
+    setSelectedCategory(value);
+  };
+  const handleChangeUploadedBy = (value) => {
+    console.log("e", value);
+    setUploadedBy(value);
+  };
 
   const handleUploadImage = () => {
     navigate("/upload_image", {
@@ -126,7 +194,13 @@ const MainLayout = () => {
           }}
           onClick={() => navigate("/")}
         >
-          <Image src={logo1} preview={false} />
+          <Image
+            src={logo1}
+            preview={false}
+            style={{
+              width: "20",
+            }}
+          />
         </div>
 
         <div
@@ -137,30 +211,68 @@ const MainLayout = () => {
             gap: ".8rem",
           }}
         >
-          <Button
-            size="medium"
-            style={{
-              border: "1px solid #04befe",
-            }}
-            onClick={() =>
-              navigate("/create_category", {
-                state: {
-                  from_create_category: true,
-                },
-              })
-            }
-          >
-            Add Category
-          </Button>
-          <Button
-            size="medium"
-            style={{
-              border: "1px solid #04befe",
-            }}
-            onClick={() => navigate("/login")}
-          >
-            Log in
-          </Button>
+          {!screens.xs && token && (
+            <Button
+              size="medium"
+              style={{
+                border: "none",
+              }}
+              onClick={() =>
+                navigate("/create_category", {
+                  state: {
+                    from_create_category: true,
+                  },
+                })
+              }
+            >
+              Add Category
+            </Button>
+          )}
+          {!token && !screens.xs && (
+            <Button
+              size="medium"
+              type="primary"
+              style={{
+                // border: "1px solid #04befe",
+                background: "linear-gradient(135deg, #04befe, #6253e1)",
+              }}
+              onClick={() => navigate("/login")}
+            >
+              Log in
+            </Button>
+          )}
+          {token && (
+            <Dropdown
+              overlay={menu}
+              trigger={["click"]}
+              placement="bottomRight"
+            >
+              <Avatar
+                size={40}
+                style={{
+                  background: "linear-gradient(135deg, #04befe, #6253e1)",
+                  verticalAlign: "middle",
+                  color: "#fff",
+                  cursor: "pointer",
+                }}
+              >
+                USER
+              </Avatar>
+            </Dropdown>
+          )}
+          {!token && screens.xs && (
+            <Dropdown
+              overlay={menu}
+              trigger={["click"]}
+              placement="bottomRight"
+            >
+              <MoreOutlined
+                style={{
+                  fontSize: 20,
+                }}
+              />
+            </Dropdown>
+          )}
         </div>
       </Header>
       <FloatButton
@@ -169,7 +281,7 @@ const MainLayout = () => {
         type="default"
         style={{
           insetInlineEnd: screens.lg
-            ? 94
+            ? 44
             : screens.md
             ? 24
             : screens.sm
@@ -189,55 +301,26 @@ const MainLayout = () => {
           height: "100vh",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: {
-              xs: "column",
-              sm: "row",
-              md: "row",
-            },
-          }}
-        >
-          {!location?.state?.from_upload_image &&
-            !location?.state?.from_create_category && (
-              <div
+        {screens.xs &&
+          !location?.state?.from_upload_image &&
+          !location?.state?.from_create_category && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+              }}
+            >
+              <IoFilterOutline
                 style={{
-                  display: "flex",
-                  gap: 10,
+                  margin: "10px 0",
+                  fontSize: 25,
                 }}
-              >
-                <div
-                  style={{
-                    marginTop: 10,
-                    marginBottom: 10,
-                  }}
-                >
-                  <Dropdown overlay={menu} trigger={["click"]}>
-                    <Button>
-                      {selectedItem} <DownOutlined />
-                    </Button>
-                  </Dropdown>
-                </div>
-                <div
-                  style={{
-                    marginTop: 10,
-                    marginBottom: 10,
-                  }}
-                >
-                  <Dropdown
-                    overlay={categories}
-                    trigger={["click"]}
-                    onClick={() => getCategoriesNames()}
-                  >
-                    <Button>
-                      {selectedCategory} <DownOutlined />
-                    </Button>
-                  </Dropdown>
-                </div>
-              </div>
-            )}
-          {(location?.state?.from_upload_image ||
+                onClick={showModal}
+              />
+            </div>
+          )}
+        {screens.xs &&
+          (location?.state?.from_upload_image ||
             location?.state?.from_create_category) && (
             <div
               style={{
@@ -250,7 +333,171 @@ const MainLayout = () => {
               </Button>
             </div>
           )}
-        </div>
+
+        {!screens.xs && (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: {
+                xs: "column",
+                sm: "row",
+                md: "row",
+              },
+            }}
+          >
+            {!location?.state?.from_upload_image &&
+              !location?.state?.from_create_category && (
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 10,
+                  }}
+                >
+                  <div
+                    style={{
+                      marginTop: 10,
+                      marginBottom: 10,
+                    }}
+                  >
+                    <Select
+                      value={selectedItem}
+                      style={{ width: 120 }}
+                      onChange={(e) => handleChangeDateRange(e)}
+                      options={dateRanges?.map((dateRange) => {
+                        return {
+                          label: dateRange.label,
+                          value: dateRange.value,
+                        };
+                      })}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      marginTop: 10,
+                      marginBottom: 10,
+                    }}
+                    onClick={() => getCategoriesNames()}
+                  >
+                    <Select
+                      value={selectedCategory}
+                      style={{ width: 120 }}
+                      onChange={(e) => handleChange(e)}
+                      options={categoryNameList?.map((categoryName) => {
+                        return {
+                          label: categoryName.name,
+                          value: categoryName.id,
+                        };
+                      })}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      marginTop: 10,
+                      marginBottom: 10,
+                    }}
+                    onClick={() => getUserNames()}
+                  >
+                    <Select
+                      value={uploadedBy}
+                      style={{ width: 120 }}
+                      onChange={(e) => handleChangeUploadedBy(e)}
+                      options={userNamesList?.map((userName) => {
+                        return {
+                          label: userName.name,
+                          value: userName.id,
+                        };
+                      })}
+                    />
+                  </div>
+                </div>
+              )}
+            {(location?.state?.from_upload_image ||
+              location?.state?.from_create_category) && (
+              <div
+                style={{
+                  marginTop: 10,
+                  marginBottom: 10,
+                }}
+              >
+                <Button onClick={() => navigate(-1)}>
+                  <LeftOutlined />
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+        <Modal
+          title="Filters"
+          open={isModalOpen}
+          onOk={handleOk}
+          okText="Apply Filters"
+          onCancel={handleCancel}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 10,
+            }}
+          >
+            <div
+              style={{
+                marginTop: 10,
+                marginBottom: 10,
+              }}
+            >
+              <Select
+                value={selectedItem}
+                style={{ width: 120 }}
+                onChange={(e) => handleChangeDateRange(e)}
+                options={dateRanges?.map((dateRange) => {
+                  return {
+                    label: dateRange.label,
+                    value: dateRange.value,
+                  };
+                })}
+              />
+            </div>
+            <div
+              style={{
+                marginTop: 10,
+                marginBottom: 10,
+              }}
+              onClick={() => getCategoriesNames()}
+            >
+              <Select
+                value={selectedCategory}
+                style={{ width: 120 }}
+                onChange={(e) => handleChange(e)}
+                options={categoryNameList?.map((categoryName) => {
+                  return {
+                    label: categoryName.name,
+                    value: categoryName.id,
+                  };
+                })}
+              />
+            </div>
+            <div
+              style={{
+                marginTop: 10,
+                marginBottom: 10,
+              }}
+              onClick={() => getUserNames()}
+            >
+              <Select
+                value={uploadedBy}
+                style={{ width: 120 }}
+                onChange={(e) => handleChangeUploadedBy(e)}
+                options={userNamesList?.map((userName) => {
+                  return {
+                    label: userName.name,
+                    value: userName.id,
+                  };
+                })}
+              />
+            </div>
+          </div>
+        </Modal>
         <div
           style={{
             padding: 24,
