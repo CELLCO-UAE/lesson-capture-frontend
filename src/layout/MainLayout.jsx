@@ -34,6 +34,7 @@ import {
   setImageGalleryData,
 } from "../redux/features/imageGallerySlice/imageGallerySlice";
 import { useAppDispatch } from "../redux/hooks";
+import "./MainLayout.css";
 
 const { useBreakpoint } = Grid;
 
