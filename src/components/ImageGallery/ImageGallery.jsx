@@ -1,75 +1,99 @@
+import { LoadingOutlined } from "@ant-design/icons";
 import { Image } from "antd";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useGetImageGalleryDataQuery } from "../../redux/features/imageGallerySlice/imageGalleryApiSlice";
-import { setImageGalleryData } from "../../redux/features/imageGallerySlice/imageGallerySlice";
+import { useInView } from "react-intersection-observer";
+import { useLazyGetImageGalleryDataQuery } from "../../redux/features/imageGallerySlice/imageGalleryApiSlice";
+import {
+  setImageGalleryCount,
+  setImageGalleryData,
+} from "../../redux/features/imageGallerySlice/imageGallerySlice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import ImageCard from "../ImageCard/ImageCard";
 import "./ImageGallery.css";
 
 const ImageGallery = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // manage loading state
   const [page, setPage] = useState(1);
   const observer = useRef();
   const dispatch = useAppDispatch();
+  const [hasMore, setHasMore] = useState(true);
 
-  const { imageGalleryData } = useAppSelector(
+  const { ref, inView } = useInView({
+    threshold: 1,
+  });
+
+  const { imageGalleryData, imageGalleryCount } = useAppSelector(
     (state) => state.imageGalleryReducer
   );
 
-  // -------------- get api -----------------------
-  const { data: imageGalleryAllData } = useGetImageGalleryDataQuery(
-    {
-      page: page,
-    },
-    {
-      refetchOnArgsChange: true,
+  // // -------------- get api -----------------------
+  // const { data: imageGalleryAllData, isFetching } = useGetImageGalleryDataQuery(
+  //   {
+  //     page: page,
+  //   },
+  //   {
+  //     refetchOnArgsChange: true,
+  //   }
+  // );
+
+  const [getImageGalleryData, { data: imageData }] =
+    useLazyGetImageGalleryDataQuery();
+
+  const fetchGalleryData = useCallback(async () => {
+    setLoading(true);
+    if (imageGalleryData?.length !== imageGalleryCount) {
+      const response = await getImageGalleryData({
+        page: page,
+        page_size: 10,
+      });
+      if (response.data) {
+        setLoading(false);
+        dispatch(
+          setImageGalleryData([...imageGalleryData, ...response.data.results])
+        );
+        setHasMore(response.data.results.length > 0);
+        dispatch(setImageGalleryCount(response.data.count));
+      }
     }
-  );
+  }, [page, getImageGalleryData]);
 
   useEffect(() => {
-    dispatch(setImageGalleryData(imageGalleryAllData));
-  }, [dispatch, imageGalleryAllData]);
+    fetchGalleryData();
+  }, [fetchGalleryData, dispatch]);
 
-  const lastPostElementRef = useCallback(
-    (node) => {
-      if (loading) return;
-      if (observer.current) observer.current.disconnect();
+  useEffect(() => {
+    if (inView && hasMore && !loading) {
+      setPage((prevPage) => prevPage + 1);
+    }
+  }, [inView, hasMore, loading]);
 
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-          setPage((prevPage) => prevPage + 1); // trigger loading of new posts by chaging page no
-        }
-      });
-
-      if (node) observer.current.observe(node);
-    },
-    [loading]
-  );
   return (
-    <div className="image-gallery">
-      <Image.PreviewGroup
-        preview={{
-          onChange: (current, prev) =>
-            console.log(`current index: ${current}, prev index: ${prev}`),
-        }}
-      >
-        {imageGalleryData?.results?.map((item, index) => (
-          <div key={index}>
-            <ImageCard
-              //   width={200}
-              src={item.image} // Assuming your MOCK_DATA has imageUrl
-              alt={`Image ${index}`}
-              data={item}
-              ref={
-                imageGalleryData?.results?.length === index + 1
-                  ? lastPostElementRef
-                  : null
-              }
-            />
-          </div>
-        ))}
-      </Image.PreviewGroup>
-    </div>
+    <>
+      <div className="image-gallery">
+        <Image.PreviewGroup
+          preview={{
+            onChange: (current, prev) =>
+              console.log(`current index: ${current}, prev index: ${prev}`),
+          }}
+        >
+          {imageGalleryData?.map((item, index) => (
+            <div ref={ref} key={index}>
+              <ImageCard src={item.image} alt={`Image ${index}`} data={item} />
+            </div>
+          ))}
+        </Image.PreviewGroup>
+      </div>
+      {loading && imageGalleryData?.length !== imageGalleryCount && (
+        <LoadingOutlined
+          style={{
+            fontSize: "50px",
+            display: "flex",
+            justifyContent: "center",
+            color: "#04befe",
+          }}
+        />
+      )}
+    </>
   );
 };
 

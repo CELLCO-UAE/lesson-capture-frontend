@@ -4,6 +4,7 @@ import {
   LogoutOutlined,
   MoreOutlined,
   PlusOutlined,
+  ReloadOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import {
@@ -18,6 +19,7 @@ import {
   Modal,
   Select,
   theme,
+  Tooltip,
 } from "antd";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
@@ -27,7 +29,10 @@ import logo1 from "../assets/lesson-capture-logo.svg";
 import { useLazyGetCategoriesNamesQuery } from "../redux/features/categorySlice/categoryApiSlice";
 import { useLazyGetUserNamesQuery } from "../redux/features/globalSlice/globalApiSlice";
 import { useLazyGetImageGalleryDataQuery } from "../redux/features/imageGallerySlice/imageGalleryApiSlice";
-import { setImageGalleryData } from "../redux/features/imageGallerySlice/imageGallerySlice";
+import {
+  setImageGalleryCount,
+  setImageGalleryData,
+} from "../redux/features/imageGallerySlice/imageGallerySlice";
 import { useAppDispatch } from "../redux/hooks";
 
 const { useBreakpoint } = Grid;
@@ -46,6 +51,7 @@ const MainLayout = () => {
   const [uploadedBy, setUploadedBy] = useState("Uploaded By");
   const screens = useBreakpoint();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [page, setPage] = useState(1);
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -62,7 +68,7 @@ const MainLayout = () => {
   const [getCategoriesNames, { data: categoryNameList }] =
     useLazyGetCategoriesNamesQuery();
   const [getUserNames, { data: userNamesList }] = useLazyGetUserNamesQuery();
-  const [getImageGalleryData, { data: imageGalleryData }] =
+  const [getImageGalleryData, { data: imageGalleryData, isSuccess }] =
     useLazyGetImageGalleryDataQuery();
 
   const dateRanges = [
@@ -101,9 +107,9 @@ const MainLayout = () => {
           selectedItem !== "all" && {
             date_range: selectedItem,
           }),
+        page: page,
       });
     }
-    dispatch(setImageGalleryData(imageGalleryData));
   }, [
     getImageGalleryData,
     uploadedBy,
@@ -111,11 +117,24 @@ const MainLayout = () => {
     selectedItem,
     imageGalleryData,
     dispatch,
+    page,
   ]);
 
-  // useEffect(() => {
-  //   dispatch(setImageGalleryData(imageGalleryData));
-  // }, [dispatch, imageGalleryData]);
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(setImageGalleryData(imageGalleryData?.results));
+      dispatch(setImageGalleryCount(imageGalleryData?.count));
+    }
+  }, [dispatch, imageGalleryData, isSuccess]);
+
+  const handleReset = async () => {
+    await getImageGalleryData({
+      page: 1,
+    });
+    setUploadedBy("Uploaded By");
+    setSelectedCategory("Select a category");
+    setSelectedItem("Date Range");
+  };
 
   const menu = (
     <Menu>
@@ -445,6 +464,24 @@ const MainLayout = () => {
                       })}
                     />
                   </div>
+                  {(selectedCategory || selectedItem || uploadedBy) && (
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Tooltip title="Reset">
+                        <Button
+                          shape="circle"
+                          icon={<ReloadOutlined />}
+                          danger
+                          onClick={handleReset}
+                        />
+                      </Tooltip>
+                    </div>
+                  )}
                 </div>
               )}
             {(location?.state?.from_upload_image ||
@@ -468,6 +505,7 @@ const MainLayout = () => {
           onOk={handleOk}
           okText="Apply Filters"
           onCancel={handleCancel}
+          closable
         >
           <div
             style={{
@@ -532,6 +570,24 @@ const MainLayout = () => {
                 })}
               />
             </div>
+            {(selectedCategory || selectedItem || uploadedBy) && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Tooltip title="Reset">
+                  <Button
+                    shape="circle"
+                    icon={<ReloadOutlined />}
+                    danger
+                    onClick={handleReset}
+                  />
+                </Tooltip>
+              </div>
+            )}
           </div>
         </Modal>
         <div

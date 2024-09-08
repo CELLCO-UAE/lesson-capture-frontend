@@ -5,6 +5,12 @@
   grid-template-columns: repeat(5, 1fr);
 }
 
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 @media (max-width: 1200px) {
   .image-gallery {
     grid-template-columns: repeat(4, 1fr);
