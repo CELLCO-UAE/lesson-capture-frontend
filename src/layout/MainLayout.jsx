@@ -502,10 +502,8 @@ const MainLayout = () => {
         <Modal
           title="Filters"
           open={isModalOpen}
-          onOk={handleOk}
-          okText="Apply Filters"
           onCancel={handleCancel}
-          closable
+          footer={null}
         >
           <div
             style={{
