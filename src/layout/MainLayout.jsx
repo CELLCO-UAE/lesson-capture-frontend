@@ -4,7 +4,6 @@ import {
   LogoutOutlined,
   MoreOutlined,
   PlusOutlined,
-  SettingOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import {
@@ -21,12 +20,15 @@ import {
   theme,
 } from "antd";
 import Cookies from "js-cookie";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoFilterOutline } from "react-icons/io5";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import logo1 from "../assets/lesson-capture-logo.svg";
 import { useLazyGetCategoriesNamesQuery } from "../redux/features/categorySlice/categoryApiSlice";
 import { useLazyGetUserNamesQuery } from "../redux/features/globalSlice/globalApiSlice";
+import { useLazyGetImageGalleryDataQuery } from "../redux/features/imageGallerySlice/imageGalleryApiSlice";
+import { setImageGalleryData } from "../redux/features/imageGallerySlice/imageGallerySlice";
+import { useAppDispatch } from "../redux/hooks";
 
 const { useBreakpoint } = Grid;
 
@@ -38,6 +40,7 @@ const MainLayout = () => {
   } = theme.useToken();
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useAppDispatch();
   const [selectedItem, setSelectedItem] = useState("Date Range");
   const [selectedCategory, setSelectedCategory] = useState("Select a category");
   const [uploadedBy, setUploadedBy] = useState("Uploaded By");
@@ -59,6 +62,8 @@ const MainLayout = () => {
   const [getCategoriesNames, { data: categoryNameList }] =
     useLazyGetCategoriesNamesQuery();
   const [getUserNames, { data: userNamesList }] = useLazyGetUserNamesQuery();
+  const [getImageGalleryData, { data: imageGalleryData }] =
+    useLazyGetImageGalleryDataQuery();
 
   const dateRanges = [
     {
@@ -83,6 +88,35 @@ const MainLayout = () => {
     },
   ];
 
+  useEffect(() => {
+    if (selectedItem || selectedCategory || uploadedBy) {
+      getImageGalleryData({
+        ...(uploadedBy !== "Uploaded By" && {
+          user: uploadedBy,
+        }),
+        ...(selectedCategory !== "Select a category" && {
+          category: selectedCategory,
+        }),
+        ...(selectedItem !== "Date Range" &&
+          selectedItem !== "all" && {
+            date_range: selectedItem,
+          }),
+      });
+    }
+    dispatch(setImageGalleryData(imageGalleryData));
+  }, [
+    getImageGalleryData,
+    uploadedBy,
+    selectedCategory,
+    selectedItem,
+    imageGalleryData,
+    dispatch,
+  ]);
+
+  // useEffect(() => {
+  //   dispatch(setImageGalleryData(imageGalleryData));
+  // }, [dispatch, imageGalleryData]);
+
   const menu = (
     <Menu>
       {screens.xs && token && (
@@ -100,7 +134,7 @@ const MainLayout = () => {
           Add Category
         </Menu.Item>
       )}
-      {token && (
+      {/* {token && (
         <Menu.Item key="1" icon={<UserOutlined />}>
           Profile
         </Menu.Item>
@@ -109,7 +143,7 @@ const MainLayout = () => {
         <Menu.Item key="2" icon={<SettingOutlined />}>
           Settings
         </Menu.Item>
-      )}
+      )} */}
       {token && (
         <Menu.Item
           key="3"
@@ -162,6 +196,8 @@ const MainLayout = () => {
     });
   };
 
+  console.log(selectedItem, selectedCategory, uploadedBy);
+
   return (
     <Layout
       style={{
@@ -211,7 +247,7 @@ const MainLayout = () => {
             gap: ".8rem",
           }}
         >
-          {!screens.xs && token && (
+          {!screens.xs && (
             <Button
               size="medium"
               style={{

@@ -20,7 +20,6 @@ const ImageGallery = () => {
   const { data: imageGalleryAllData } = useGetImageGalleryDataQuery(
     {
       page: page,
-      user: 17,
     },
     {
       refetchOnArgsChange: true,
