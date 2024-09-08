@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-import "./Toast.css";
+import "./toast.css";
 
 export const Notify = ({ icon = "success", message }) => {
   const Toast = Swal.mixin({
