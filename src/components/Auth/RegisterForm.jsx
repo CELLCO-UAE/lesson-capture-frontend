@@ -1,11 +1,23 @@
-import { Button, Checkbox, Form, Input, Select, Typography } from "antd";
+import {
+  Button,
+  Checkbox,
+  Form,
+  Grid,
+  Image,
+  Input,
+  Select,
+  Typography,
+} from "antd";
 import Cookies from "js-cookie";
 import { Link, useNavigate } from "react-router-dom";
+import logo1 from "../../assets/lesson-capture-logo.svg";
 import {
   usePostLoginCredentialsMutation,
   usePostUserCredentialsMutation,
 } from "../../redux/features/authSlice/authApiSlice";
 import { Notify } from "../../utilities/toast/toast";
+
+const { useBreakpoint } = Grid;
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -43,6 +55,7 @@ const tailFormItemLayout = {
 const RegisterForm = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const screens = useBreakpoint();
 
   const [postUserCredentials] = usePostUserCredentialsMutation();
   const [postLoginCredentials] = usePostLoginCredentialsMutation();
@@ -96,164 +109,187 @@ const RegisterForm = () => {
   return (
     <div
       style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        padding: 20,
+        position: screens.sx ? "static" : "relative",
       }}
     >
-      <Form
-        {...formItemLayout}
-        form={form}
-        name="register"
-        onFinish={onFinish}
-        initialValues={{
-          residence: ["zhejiang", "hangzhou", "xihu"],
-          prefix: "971",
-        }}
+      <div
         style={{
-          maxWidth: 600,
+          fontWeight: "bold",
+          fontSize: 20,
+          cursor: "pointer",
+          padding: 0,
+          // height: "100%",
+
+          position: screens.sx ? "static" : "absolute",
+          ...(!screens.sx && { top: "2rem" }),
+          ...(!screen.sx && { left: "2.5rem" }),
         }}
-        scrollToFirstError
+        onClick={() => navigate("/")}
       >
-        <Title
-          level={3}
-          style={{
-            marginBottom: 50,
+        <Image src={logo1} preview={false} />
+      </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          padding: "0 1rem",
+          marginTop: screens.sx ? "5rem" : 0,
+        }}
+      >
+        <Form
+          {...formItemLayout}
+          form={form}
+          name="register"
+          onFinish={onFinish}
+          initialValues={{
+            residence: ["zhejiang", "hangzhou", "xihu"],
+            prefix: "971",
           }}
+          style={{
+            maxWidth: 600,
+          }}
+          scrollToFirstError
         >
-          CREATE AN ACCOUNT
-        </Title>
-        <Form.Item
-          name="first_name"
-          label="First Name"
-          rules={[
-            {
-              required: true,
-              message: "Please input your first name!",
-            },
-          ]}
-          onChange={(e) => handleRegisterData(e)}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="last_name"
-          label="Last Name"
-          rules={[
-            {
-              required: true,
-              message: "Please input your last name!",
-            },
-          ]}
-          onChange={(e) => handleRegisterData(e)}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="email"
-          label="E-mail"
-          rules={[
-            {
-              type: "email",
-              message: "The input is not valid E-mail!",
-            },
-            {
-              required: true,
-              message: "Please input your E-mail!",
-            },
-          ]}
-          onChange={(e) => handleRegisterData(e)}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          name="password"
-          label="Password"
-          rules={[
-            {
-              required: true,
-              message: "Please input your password!",
-            },
-          ]}
-          hasFeedback
-          onChange={(e) => handleRegisterData(e)}
-        >
-          <Input.Password />
-        </Form.Item>
-
-        <Form.Item
-          name="confirm"
-          label="Confirm Password"
-          dependencies={["password"]}
-          hasFeedback
-          rules={[
-            {
-              required: true,
-              message: "Please confirm your password!",
-            },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue("password") === value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(
-                  new Error("The new password that you entered do not match!")
-                );
-              },
-            }),
-          ]}
-        >
-          <Input.Password />
-        </Form.Item>
-
-        <Form.Item
-          name="phone"
-          label="Phone Number"
-          rules={[
-            {
-              required: true,
-              message: "Please input your phone number!",
-            },
-          ]}
-          onChange={(e) => handleRegisterData(e)}
-        >
-          <Input
-            addonBefore={prefixSelector}
+          <Title
+            level={3}
             style={{
-              width: "100%",
+              marginBottom: 50,
             }}
-          />
-        </Form.Item>
+          >
+            CREATE AN ACCOUNT
+          </Title>
+          <Form.Item
+            name="first_name"
+            label="First Name"
+            rules={[
+              {
+                required: true,
+                message: "Please input your first name!",
+              },
+            ]}
+            onChange={(e) => handleRegisterData(e)}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="last_name"
+            label="Last Name"
+            rules={[
+              {
+                required: true,
+                message: "Please input your last name!",
+              },
+            ]}
+            onChange={(e) => handleRegisterData(e)}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="email"
+            label="E-mail"
+            rules={[
+              {
+                type: "email",
+                message: "The input is not valid E-mail!",
+              },
+              {
+                required: true,
+                message: "Please input your E-mail!",
+              },
+            ]}
+            onChange={(e) => handleRegisterData(e)}
+          >
+            <Input />
+          </Form.Item>
 
-        <Form.Item
-          name="agreement"
-          valuePropName="checked"
-          rules={[
-            {
-              validator: (_, value) =>
-                value
-                  ? Promise.resolve()
-                  : Promise.reject(new Error("Should accept agreement")),
-            },
-          ]}
-          {...tailFormItemLayout}
-        >
-          <Checkbox>
-            I have read the <a href="">agreement</a>
-          </Checkbox>
-        </Form.Item>
-        <Form.Item {...tailFormItemLayout}>
-          <Button type="primary" htmlType="submit">
-            Register
-          </Button>
-        </Form.Item>
-        <Form.Item>
-          or <Link to="/login">Log in now!</Link>
-        </Form.Item>
-      </Form>
+          <Form.Item
+            name="password"
+            label="Password"
+            rules={[
+              {
+                required: true,
+                message: "Please input your password!",
+              },
+            ]}
+            hasFeedback
+            onChange={(e) => handleRegisterData(e)}
+          >
+            <Input.Password />
+          </Form.Item>
+
+          <Form.Item
+            name="confirm"
+            label="Confirm Password"
+            dependencies={["password"]}
+            hasFeedback
+            rules={[
+              {
+                required: true,
+                message: "Please confirm your password!",
+              },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("password") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(
+                    new Error("The new password that you entered do not match!")
+                  );
+                },
+              }),
+            ]}
+          >
+            <Input.Password />
+          </Form.Item>
+
+          <Form.Item
+            name="phone"
+            label="Phone Number"
+            rules={[
+              {
+                required: true,
+                message: "Please input your phone number!",
+              },
+            ]}
+            onChange={(e) => handleRegisterData(e)}
+          >
+            <Input
+              addonBefore={prefixSelector}
+              style={{
+                width: "100%",
+              }}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="agreement"
+            valuePropName="checked"
+            rules={[
+              {
+                validator: (_, value) =>
+                  value
+                    ? Promise.resolve()
+                    : Promise.reject(new Error("Should accept agreement")),
+              },
+            ]}
+            {...tailFormItemLayout}
+          >
+            <Checkbox>
+              I have read the <a href="">agreement</a>
+            </Checkbox>
+          </Form.Item>
+          <Form.Item {...tailFormItemLayout}>
+            <Button type="primary" htmlType="submit">
+              Register
+            </Button>
+          </Form.Item>
+          <Form.Item>
+            or <Link to="/login">Log in now!</Link>
+          </Form.Item>
+        </Form>
+      </div>
     </div>
   );
 };

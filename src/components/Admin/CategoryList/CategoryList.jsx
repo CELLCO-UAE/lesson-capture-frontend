@@ -1,5 +1,5 @@
-import { Space, Table, Tooltip, Typography } from "antd";
-import React, { useEffect } from "react";
+import { Pagination, Space, Table, Tooltip, Typography } from "antd";
+import React, { useEffect, useState } from "react";
 import { RiFolderAddLine } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import {
@@ -35,9 +35,17 @@ const { Title } = Typography;
 
 const CategoryList = () => {
   const navigate = useNavigate();
-  const { data: categoryListData } = useGetCategoryDataQuery(undefined, {
-    refetchOnMountOrArgChange: true,
-  });
+  const [current, setCurrent] = useState(1);
+
+  const { data: categoryListData } = useGetCategoryDataQuery(
+    {
+      offset: current,
+      limit: 10,
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
   // -----------delete api---------------
   const [deleteCategoryData, { isSuccess, isError }] =
@@ -119,6 +127,11 @@ const CategoryList = () => {
     };
   });
 
+  const onChange = (page) => {
+    console.log(page);
+    setCurrent(page);
+  };
+
   return (
     <div>
       <div
@@ -151,7 +164,23 @@ const CategoryList = () => {
           />
         </Tooltip>
       </div>
-      <Table columns={columns} dataSource={data} />
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={{
+          position: ["none"],
+        }}
+      />
+      <Pagination
+        current={current}
+        onChange={onChange}
+        total={categoryListData?.count}
+        align="end"
+        responsive
+        style={{
+          margin: "1.5rem 0",
+        }}
+      />
     </div>
   );
 };

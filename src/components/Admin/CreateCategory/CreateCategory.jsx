@@ -62,7 +62,7 @@ const CreateCategory = () => {
           <Input />
         </Form.Item>
         <Form.Item label="Description" name="description">
-          <TextArea rows={4} placeholder="maxLength is 6" maxLength={6} />
+          <TextArea rows={4} placeholder="maxLength is 50" maxLength={50} />
         </Form.Item>
 
         <Form.Item wrapperCol={{ offset: 0, span: 16 }}>
