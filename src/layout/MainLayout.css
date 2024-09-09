@@ -7,11 +7,7 @@
   .ant-float-btn-body
   .ant-float-btn-content
   .ant-float-btn-icon {
-  color: #fff;
-}
-
-:where(.css-vn1oyg).ant-float-btn-default .ant-float-btn-body {
-  background: linear-gradient(145deg, #84d6ee, #10bce4) !important;
+  color: #fff !important;
 }
 
 .custom-float-button {
