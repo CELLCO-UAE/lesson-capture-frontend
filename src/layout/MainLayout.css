@@ -18,7 +18,7 @@
   background: linear-gradient(145deg, #84d6ee, #10bce4) !important;
   height: 70px;
   width: 70px;
-  color: "#fff";
+  color: #fff;
   border: 1px solid #fff;
   animation: scale-animation 2s infinite;
   transition: background 0.3s ease;
