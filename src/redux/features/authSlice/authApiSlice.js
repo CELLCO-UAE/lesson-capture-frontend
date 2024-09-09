@@ -20,6 +20,13 @@ const authApiSlice = apiSlice.injectEndpoints({
         },
       }),
     }),
+    postLogoutCredentials: builder.mutation({
+      query: () => ({
+        url: `/auth/logout`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["auth"],
+    }),
     getUserInfos: builder.query({
       query: () => ({
         url: `/auth/auth-user-profile`,
@@ -32,6 +39,7 @@ const authApiSlice = apiSlice.injectEndpoints({
 export const {
   usePostUserCredentialsMutation,
   usePostLoginCredentialsMutation,
+  usePostLogoutCredentialsMutation,
   useGetUserInfosQuery,
   useLazyGetUserInfosQuery,
 } = authApiSlice;

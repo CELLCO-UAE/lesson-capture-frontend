@@ -2,7 +2,7 @@ import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Flex, Form, Image, Input, Typography } from "antd";
 import Cookies from "js-cookie";
 import { Link, useNavigate } from "react-router-dom";
-import logo1 from "../../assets/lesson-capture-logo.svg";
+import logo1 from "../../assets/scanmate.svg";
 import { usePostLoginCredentialsMutation } from "../../redux/features/authSlice/authApiSlice";
 import { Notify } from "../../utilities/toast/toast";
 

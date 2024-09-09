@@ -54,7 +54,7 @@ const UserImageGallery = () => {
       const response = await getImageGalleryData({
         page: page,
         page_size: 10,
-        ...(location.state?.from_my_images && { user: user?.id }),
+        // ...(location.state?.from_my_images && { user: user?.id }),
       });
       if (response.data) {
         setLoading(false);

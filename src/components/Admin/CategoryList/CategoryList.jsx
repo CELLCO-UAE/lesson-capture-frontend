@@ -1,12 +1,17 @@
 import { Pagination, Space, Table, Tooltip, Typography } from "antd";
 import React, { useEffect, useState } from "react";
+import { MdDeleteOutline, MdOutlineModeEditOutline } from "react-icons/md";
 import { RiFolderAddLine } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import {
   useDeleteCategoryDataMutation,
   useGetCategoryDataQuery,
 } from "../../../redux/features/categorySlice/categoryApiSlice";
+import { setSelectedCategoryData } from "../../../redux/features/categorySlice/categorySlice";
+import { useAppDispatch } from "../../../redux/hooks";
 import { ConfirmationNotify, Notify } from "../../../utilities/toast/toast";
+import EditCategoryModal from "../EditCategoryModal/EditCategoryModal";
+
 const { Title } = Typography;
 
 // const data = [
@@ -35,7 +40,9 @@ const { Title } = Typography;
 
 const CategoryList = () => {
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
   const [current, setCurrent] = useState(1);
+  const dispatch = useAppDispatch();
 
   const { data: categoryListData } = useGetCategoryDataQuery(
     {
@@ -48,7 +55,7 @@ const CategoryList = () => {
   );
 
   // -----------delete api---------------
-  const [deleteCategoryData, { isSuccess, isError }] =
+  const [deleteCategoryData, { isSuccess, isError, error }] =
     useDeleteCategoryDataMutation();
 
   const handleCategoryDelete = async (id) => {
@@ -66,12 +73,14 @@ const CategoryList = () => {
       Notify({ message: "Category is deleted successfully!" });
     }
     if (isError) {
+      const message = error?.data[0]?.replace(/[{}']/g, `${""}`);
+
       Notify({
         icon: "error",
-        message: "Failed!",
+        message: message || "Failed!",
       });
     }
-  }, [isSuccess, isError]);
+  }, [isSuccess, isError, error]);
 
   const columns = [
     {
@@ -112,7 +121,34 @@ const CategoryList = () => {
       render: (_, record) => {
         return (
           <Space size="middle">
-            <a onClick={() => handleCategoryDelete(record?.id)}>Delete</a>
+            <Tooltip title="Edit">
+              <MdOutlineModeEditOutline
+                style={{
+                  fontSize: "1.2rem",
+                  fontWeight: "bold",
+                  color: "#04befe",
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  showModal();
+                  dispatch(setSelectedCategoryData(record));
+                }}
+              />
+            </Tooltip>
+            <Tooltip title="Delete">
+              <MdDeleteOutline
+                style={{
+                  fontSize: "1.2rem",
+                  fontWeight: "bold",
+                  color: "red",
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  console.log(record?.id);
+                  handleCategoryDelete(record?.id);
+                }}
+              />
+            </Tooltip>
           </Space>
         );
       },
@@ -128,8 +164,11 @@ const CategoryList = () => {
   });
 
   const onChange = (page) => {
-    console.log(page);
     setCurrent(page);
+  };
+
+  const showModal = () => {
+    setOpen(true);
   };
 
   return (
@@ -181,6 +220,7 @@ const CategoryList = () => {
           margin: "1.5rem 0",
         }}
       />
+      <EditCategoryModal open={open} setOpen={setOpen} />
     </div>
   );
 };

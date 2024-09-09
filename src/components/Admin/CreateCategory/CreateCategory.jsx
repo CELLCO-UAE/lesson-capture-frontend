@@ -1,34 +1,71 @@
-import { Button, DatePicker, Form, Input, Typography } from "antd";
+import { Button, Form, Input, Typography } from "antd";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { usePostCategoryDataMutation } from "../../../redux/features/categorySlice/categoryApiSlice";
+import {
+  usePostCategoryDataMutation,
+  useUpdateCategoryDataMutation,
+} from "../../../redux/features/categorySlice/categoryApiSlice";
+import { useAppSelector } from "../../../redux/hooks";
 import { Notify } from "../../../utilities/toast/toast";
 
-const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 const { Title } = Typography;
 
-const normFile = (e) => {
-  if (Array.isArray(e)) {
-    return e;
-  }
-  return e?.fileList;
-};
-
-const CreateCategory = () => {
+const CreateCategory = ({ fromEdit = false, open, setOpen }) => {
+  const [form] = Form.useForm(); // Initialize the form
   const navigate = useNavigate();
 
   const [postCategoryData] = usePostCategoryDataMutation();
+  const [updateCategoryData] = useUpdateCategoryDataMutation();
+
+  const [categoryData, setCategoryData] = useState({
+    name: "",
+    description: "",
+  });
+
+  const { selectedCategoryData } = useAppSelector(
+    (state) => state.categoryReducer
+  );
+
+  useEffect(() => {
+    if (fromEdit) {
+      form.setFieldsValue({
+        name: selectedCategoryData?.name,
+        description: selectedCategoryData?.description,
+      });
+    }
+  }, [
+    form,
+    fromEdit,
+    selectedCategoryData?.name,
+    selectedCategoryData?.description,
+  ]);
 
   const onFinish = async (values) => {
     const data = {
-      name: values.categoryName,
+      name: values.name,
       description: values.description,
     };
-    const response = await postCategoryData(data);
 
-    if (response.data) {
-      Notify({ message: "Category created successfully!" });
-      navigate("/");
+    if (fromEdit) {
+      const response = await updateCategoryData({
+        id: selectedCategoryData?.id,
+        data: {
+          name: values.name,
+          description: values.description,
+        },
+      });
+      if (response?.data) {
+        setOpen(!open);
+        Notify({ message: "Category Updated successfully!" });
+        navigate("/category_list");
+      }
+    } else {
+      const response = await postCategoryData(data);
+      if (response?.data) {
+        Notify({ message: "Category created successfully!" });
+        navigate("/category_list");
+      }
     }
   };
 
@@ -36,36 +73,69 @@ const CreateCategory = () => {
     <div>
       <div
         style={{
-          marginBottom: 50,
-          marginTop: 10,
+          marginBottom: fromEdit ? 40 : 50,
+          marginTop: fromEdit ? 0 : 10,
         }}
       >
-        <Title level={3}>Create Category</Title>
+        <Title level={4}>
+          {fromEdit ? "Edit Category" : "Create Category"}
+        </Title>
       </div>
       <Form
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
+        form={form} // Associate form instance
+        labelCol={{ span: 7 }}
+        wrapperCol={{ span: 17 }}
         layout="horizontal"
         style={{ maxWidth: 600 }}
         onFinish={onFinish}
+        initialValues={{
+          name: categoryData?.name,
+          description: categoryData?.description,
+        }}
       >
         <Form.Item
           label="Category Name"
-          name="categoryName"
+          name="name"
           rules={[
             {
               required: true,
-              message: "Please input your category!",
+              message: "Please input your category name!",
             },
           ]}
         >
-          <Input />
-        </Form.Item>
-        <Form.Item label="Description" name="description">
-          <TextArea rows={4} placeholder="maxLength is 50" maxLength={50} />
+          <Input
+            value={categoryData.name}
+            onChange={(e) =>
+              setCategoryData({
+                ...categoryData,
+                name: e.target.value,
+              })
+            }
+          />
         </Form.Item>
 
-        <Form.Item wrapperCol={{ offset: 0, span: 16 }}>
+        <Form.Item label="Description" name="description">
+          <TextArea
+            rows={4}
+            placeholder="Max length is 50 characters"
+            maxLength={50}
+            value={categoryData.description}
+            onChange={(e) =>
+              setCategoryData({
+                ...categoryData,
+                description: e.target.value,
+              })
+            }
+          />
+        </Form.Item>
+
+        <Form.Item
+          wrapperCol={{ offset: 0, span: -1 }}
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+          }}
+        >
           <Button type="primary" htmlType="submit">
             Submit
           </Button>

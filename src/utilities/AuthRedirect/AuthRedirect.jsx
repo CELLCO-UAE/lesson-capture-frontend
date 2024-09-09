@@ -14,10 +14,10 @@ const AuthRedirect = ({ children }) => {
 
   useEffect(() => {
     const token = Cookies.get("authToken");
-    if (protectPath && !token) {
+    if (!token) {
       navigate("/login");
     }
-  }, [navigate, location?.pathname, protectPath]);
+  }, [navigate]);
   return children;
 };
 

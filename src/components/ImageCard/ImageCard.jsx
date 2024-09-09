@@ -53,6 +53,7 @@ const ImageCard = ({ src, alt, data }) => {
           borderRadius: "5px 5px 0 0",
           objectFit: "cover",
           objectPosition: "center",
+          overflow: "hidden",
         }}
       />
 
@@ -116,27 +117,26 @@ const ImageCard = ({ src, alt, data }) => {
           </Title>
         </div>
       </div>
-      {location.state?.from_my_images && (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            padding: ".5rem",
-          }}
-        >
-          <Tooltip title="Delete">
-            <MdDeleteOutline
-              style={{
-                fontSize: "1.2rem",
-                fontWeight: "bold",
-                color: "red",
-                cursor: "pointer",
-              }}
-              onClick={() => handleDelete(data?.id)}
-            />
-          </Tooltip>
-        </div>
-      )}
+
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          padding: ".5rem",
+        }}
+      >
+        <Tooltip title="Delete">
+          <MdDeleteOutline
+            style={{
+              fontSize: "1.2rem",
+              fontWeight: "bold",
+              color: "red",
+              cursor: "pointer",
+            }}
+            onClick={() => handleDelete(data?.id)}
+          />
+        </Tooltip>
+      </div>
     </Card>
   );
 };

@@ -1,7 +1,6 @@
 import React from "react";
 import CategoryList from "../components/Admin/CategoryList/CategoryList";
 import CreateCategory from "../components/Admin/CreateCategory/CreateCategory";
-import ImageGallery from "../components/ImageGallery/ImageGallery";
 import UploadImageForm from "../components/UploadImageForm/UploadImageForm";
 import UserImageGallery from "../components/User/UserImageGallery/UserImageGallery";
 import MainLayout from "../layout/MainLayout";
@@ -15,9 +14,13 @@ const MainRoutes = {
     </AuthRedirect>
   ),
   children: [
+    // {
+    //   path: "/",
+    //   element: <ImageGallery />,
+    // },
     {
       path: "/",
-      element: <ImageGallery />,
+      element: <UserImageGallery />,
     },
     {
       path: "/upload_image",
@@ -30,10 +33,6 @@ const MainRoutes = {
     {
       path: "/create_category",
       element: <CreateCategory />,
-    },
-    {
-      path: "/my_images_list",
-      element: <UserImageGallery />,
     },
   ],
 };

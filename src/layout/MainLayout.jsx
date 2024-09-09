@@ -23,10 +23,13 @@ import {
 } from "antd";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
-import { IoFilterOutline, IoImagesOutline } from "react-icons/io5";
+import { IoFilterOutline } from "react-icons/io5";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import logo1 from "../assets/lesson-capture-logo.svg";
-import { useGetUserInfosQuery } from "../redux/features/authSlice/authApiSlice";
+import logo1 from "../assets/scanmate.svg";
+import {
+  useGetUserInfosQuery,
+  usePostLogoutCredentialsMutation,
+} from "../redux/features/authSlice/authApiSlice";
 import { useLazyGetCategoriesNamesQuery } from "../redux/features/categorySlice/categoryApiSlice";
 import { useLazyGetUserNamesQuery } from "../redux/features/globalSlice/globalApiSlice";
 import { useLazyGetImageGalleryDataQuery } from "../redux/features/imageGallerySlice/imageGalleryApiSlice";
@@ -35,6 +38,7 @@ import {
   setImageGalleryData,
 } from "../redux/features/imageGallerySlice/imageGallerySlice";
 import { useAppDispatch } from "../redux/hooks";
+import { Notify } from "../utilities/toast/toast";
 import "./MainLayout.css";
 
 const { useBreakpoint } = Grid;
@@ -76,6 +80,8 @@ const MainLayout = () => {
   const [getUserNames, { data: userNamesList }] = useLazyGetUserNamesQuery();
   const [getImageGalleryData, { data: imageGalleryData, isSuccess }] =
     useLazyGetImageGalleryDataQuery();
+  const [postLogoutCredentials, { isSuccess: isLogoutSuccess }] =
+    usePostLogoutCredentialsMutation();
 
   const dateRanges = [
     {
@@ -153,23 +159,24 @@ const MainLayout = () => {
     setSelectedItem("Date Range");
   };
 
+  const handleLogout = async () => {
+    const response = await postLogoutCredentials();
+  };
+
+  useEffect(() => {
+    if (isLogoutSuccess) {
+      Cookies.remove("authToken"), navigate("/");
+      Cookies.remove("user"), navigate("/");
+      navigate("/login");
+      Notify({
+        icon: "success",
+        message: "You have been logged out successfully!",
+      });
+    }
+  }, [isLogoutSuccess, navigate]);
+
   const menu = (
     <Menu>
-      {screens.xs && token && (
-        <Menu.Item
-          key="4"
-          icon={<IoImagesOutline />}
-          onClick={() =>
-            navigate("/my_images_list", {
-              state: {
-                from_create_category: true,
-              },
-            })
-          }
-        >
-          My Images
-        </Menu.Item>
-      )}
       {screens.xs && token && (
         <Menu.Item
           key="4"
@@ -199,10 +206,7 @@ const MainLayout = () => {
         <Menu.Item
           key="3"
           icon={<LogoutOutlined />}
-          onClick={() => {
-            Cookies.remove("authToken"), navigate("/");
-            Cookies.remove("user"), navigate("/");
-          }}
+          onClick={() => handleLogout()}
         >
           Logout
         </Menu.Item>
@@ -306,23 +310,6 @@ const MainLayout = () => {
                 border: "none",
               }}
               onClick={() =>
-                navigate("/my_images_list", {
-                  state: {
-                    from_my_images: true,
-                  },
-                })
-              }
-            >
-              My Images
-            </Button>
-          )}
-          {!screens.xs && token && (
-            <Button
-              size="medium"
-              style={{
-                border: "none",
-              }}
-              onClick={() =>
                 navigate("/category_list", {
                   state: {
                     from_create_category: true,
@@ -366,6 +353,8 @@ const MainLayout = () => {
               >
                 {userDetails?.first_name
                   ? userDetails?.first_name?.charAt(0)?.toUpperCase()
+                  : userDetails?.role === "admin"
+                  ? "Admin"
                   : "User"}
               </Avatar>
             </Dropdown>
@@ -502,25 +491,27 @@ const MainLayout = () => {
                       })}
                     />
                   </div>
-                  <div
-                    style={{
-                      marginTop: 10,
-                      marginBottom: 10,
-                    }}
-                    onClick={() => getUserNames()}
-                  >
-                    <Select
-                      value={uploadedBy}
-                      style={{ width: 120 }}
-                      onChange={(e) => handleChangeUploadedBy(e)}
-                      options={userNamesList?.map((userName) => {
-                        return {
-                          label: userName.name,
-                          value: userName.id,
-                        };
-                      })}
-                    />
-                  </div>
+                  {userDetails?.role === "admin" && (
+                    <div
+                      style={{
+                        marginTop: 10,
+                        marginBottom: 10,
+                      }}
+                      onClick={() => getUserNames()}
+                    >
+                      <Select
+                        value={uploadedBy}
+                        style={{ width: 120 }}
+                        onChange={(e) => handleChangeUploadedBy(e)}
+                        options={userNamesList?.map((userName) => {
+                          return {
+                            label: userName.name,
+                            value: userName.id,
+                          };
+                        })}
+                      />
+                    </div>
+                  )}
                   {((selectedCategory &&
                     selectedCategory !== "Select a category") ||
                     (selectedItem && selectedItem !== "Date Range") ||

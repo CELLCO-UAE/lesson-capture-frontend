@@ -10,7 +10,7 @@ import {
 } from "antd";
 import Cookies from "js-cookie";
 import { Link, useNavigate } from "react-router-dom";
-import logo1 from "../../assets/lesson-capture-logo.svg";
+import logo1 from "../../assets/scanmate.svg";
 import {
   usePostLoginCredentialsMutation,
   usePostUserCredentialsMutation,
