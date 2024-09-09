@@ -79,7 +79,6 @@ const UserImageGallery = () => {
 
   return (
     <>
-      <Title level={4}>My Images</Title>
       {imageGalleryData?.length > 0 ? (
         <div className="image-gallery">
           <Image.PreviewGroup
