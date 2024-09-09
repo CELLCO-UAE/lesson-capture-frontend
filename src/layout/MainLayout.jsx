@@ -367,7 +367,9 @@ const MainLayout = () => {
                   fontWeight: "bold",
                 }}
               >
-                USER
+                {userDetails?.first_name
+                  ? userDetails?.first_name?.charAt(0)?.toUpperCase()
+                  : "User"}
               </Avatar>
             </Dropdown>
           )}
