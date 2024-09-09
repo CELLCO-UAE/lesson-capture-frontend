@@ -1,5 +1,5 @@
 import { LoadingOutlined } from "@ant-design/icons";
-import { Image } from "antd";
+import { Empty, Image } from "antd";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { useLazyGetImageGalleryDataQuery } from "../../redux/features/imageGallerySlice/imageGalleryApiSlice";
@@ -69,20 +69,31 @@ const ImageGallery = () => {
 
   return (
     <>
-      <div className="image-gallery">
-        <Image.PreviewGroup
-          preview={{
-            onChange: (current, prev) =>
-              console.log(`current index: ${current}, prev index: ${prev}`),
-          }}
-        >
-          {imageGalleryData?.map((item, index) => (
-            <div ref={ref} key={index}>
-              <ImageCard src={item.image} alt={`Image ${index}`} data={item} />
-            </div>
-          ))}
-        </Image.PreviewGroup>
-      </div>
+      {imageGalleryData?.length > 0 ? (
+        <div className="image-gallery">
+          <Image.PreviewGroup
+            preview={{
+              onChange: (current, prev) =>
+                console.log(`current index: ${current}, prev index: ${prev}`),
+            }}
+          >
+            {imageGalleryData?.map((item, index) => (
+              <div ref={ref} key={index}>
+                <ImageCard
+                  src={item.image}
+                  alt={`Image ${index}`}
+                  data={item}
+                />
+              </div>
+            ))}
+          </Image.PreviewGroup>
+        </div>
+      ) : (
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description="No Images Found"
+        />
+      )}
       {loading && imageGalleryData?.length !== imageGalleryCount && (
         <LoadingOutlined
           style={{
