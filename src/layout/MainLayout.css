@@ -1,7 +1,7 @@
 :where(.css-dev-only-do-not-override-vn1oyg).ant-float-btn-default
   .ant-float-btn-body {
   background: linear-gradient(145deg, #84d6ee, #10bce4) !important;
-  border: 2px solid #fff !important;
+  border: 1px solid #fff !important;
 }
 :where(.css-dev-only-do-not-override-vn1oyg).ant-float-btn-default
   .ant-float-btn-body
@@ -14,7 +14,7 @@
   background: linear-gradient(135deg, #6253e1, #04befe);
   height: 70px;
   width: 70px;
-  border: 2px solid #fff;
+  border: 1px solid #fff;
   animation: scale-animation 2s infinite;
   transition: background 0.3s ease;
 }

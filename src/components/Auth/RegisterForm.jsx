@@ -109,7 +109,7 @@ const RegisterForm = () => {
   return (
     <div
       style={{
-        position: screens.sx ? "static" : "relative",
+        position: screens.xs ? "static" : "relative",
       }}
     >
       <div
@@ -118,11 +118,10 @@ const RegisterForm = () => {
           fontSize: 20,
           cursor: "pointer",
           padding: 0,
-          // height: "100%",
-
-          position: screens.sx ? "static" : "absolute",
-          ...(!screens.sx && { top: "2rem" }),
-          ...(!screen.sx && { left: "2.5rem" }),
+          position: screens.xs ? "static" : "absolute",
+          top: screens.sm ? "2rem" : "0",
+          left: screens.sm ? "2.5rem" : "0",
+          margin: screens.xs ? "1rem 1rem 0 1rem" : "0",
         }}
         onClick={() => navigate("/")}
       >
@@ -135,7 +134,7 @@ const RegisterForm = () => {
           alignItems: "center",
           height: "100vh",
           padding: "0 1rem",
-          marginTop: screens.sx ? "5rem" : 0,
+          marginTop: screens.xs ? "1rem" : "0",
         }}
       >
         <Form
@@ -247,12 +246,6 @@ const RegisterForm = () => {
           <Form.Item
             name="phone"
             label="Phone Number"
-            rules={[
-              {
-                required: true,
-                message: "Please input your phone number!",
-              },
-            ]}
             onChange={(e) => handleRegisterData(e)}
           >
             <Input
