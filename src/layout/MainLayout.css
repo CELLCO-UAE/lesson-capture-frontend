@@ -10,6 +10,10 @@
   color: #fff;
 }
 
+:where(.css-vn1oyg).ant-float-btn-default .ant-float-btn-body {
+  background: linear-gradient(145deg, #84d6ee, #10bce4) !important;
+}
+
 .custom-float-button {
   background: linear-gradient(145deg, #84d6ee, #10bce4) !important;
   height: 70px;
