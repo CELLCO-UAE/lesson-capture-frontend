@@ -628,7 +628,9 @@ const MainLayout = () => {
                 })}
               />
             </div>
-            {(selectedCategory || selectedItem || uploadedBy) && (
+            {((selectedCategory && selectedCategory !== "Select a category") ||
+              (selectedItem && selectedItem !== "Date Range") ||
+              (uploadedBy && uploadedBy !== "Uploaded By")) && (
               <div
                 style={{
                   display: "flex",
