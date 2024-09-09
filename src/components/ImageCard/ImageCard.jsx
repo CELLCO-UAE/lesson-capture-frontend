@@ -1,10 +1,41 @@
-import { Card, Image, Typography } from "antd";
-import React from "react";
-
+import { Card, Image, Tooltip, Typography } from "antd";
+import React, { useEffect } from "react";
+import { MdDeleteOutline } from "react-icons/md";
+import { useLocation } from "react-router-dom";
+import { useDeleteImageGalleryDataMutation } from "../../redux/features/imageGallerySlice/imageGalleryApiSlice";
+import { ConfirmationNotify, Notify } from "../../utilities/toast/toast";
 const { Meta } = Card;
 const { Title } = Typography;
 
 const ImageCard = ({ src, alt, data }) => {
+  const location = useLocation();
+
+  // -----------delete api---------------
+  const [deleteImageGalleryData, { isSuccess, isError }] =
+    useDeleteImageGalleryDataMutation();
+
+  const handleDelete = async (id) => {
+    const response = await ConfirmationNotify({
+      title: "Are your sure?",
+      text: "Please confirm if you want to delete this image.",
+    });
+    if (response.isConfirmed) {
+      await deleteImageGalleryData(id);
+    }
+  };
+
+  useEffect(() => {
+    if (isSuccess) {
+      Notify({ message: "Image is deleted successfully!" });
+    }
+    if (isError) {
+      Notify({
+        icon: "error",
+        message: "Failed!",
+      });
+    }
+  }, [isSuccess, isError]);
+
   return (
     <Card
       style={{
@@ -83,6 +114,27 @@ const ImageCard = ({ src, alt, data }) => {
           </Title>
         </div>
       </div>
+      {location.state?.from_my_images && (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            padding: ".5rem",
+          }}
+        >
+          <Tooltip title="Delete">
+            <MdDeleteOutline
+              style={{
+                fontSize: "1.2rem",
+                fontWeight: "bold",
+                color: "red",
+                cursor: "pointer",
+              }}
+              onClick={() => handleDelete(data?.id)}
+            />
+          </Tooltip>
+        </div>
+      )}
     </Card>
   );
 };

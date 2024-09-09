@@ -1,7 +1,7 @@
 :where(.css-dev-only-do-not-override-vn1oyg).ant-float-btn-default
   .ant-float-btn-body {
-  background: linear-gradient(135deg, #04befe, #6253e1);
-  border: none !important;
+  background: linear-gradient(145deg, #84d6ee, #10bce4) !important;
+  border: 2px solid #fff !important;
 }
 :where(.css-dev-only-do-not-override-vn1oyg).ant-float-btn-default
   .ant-float-btn-body
@@ -14,13 +14,13 @@
   background: linear-gradient(135deg, #6253e1, #04befe);
   height: 70px;
   width: 70px;
-  border: none;
+  border: 2px solid #fff;
   animation: scale-animation 2s infinite;
   transition: background 0.3s ease;
 }
 
 .custom-float-button:hover {
-  background: linear-gradient(135deg, #04befe, #6253e1);
+  background: linear-gradient(145deg, #84d6ee, #10bce4);
 }
 
 :where(.css-dev-only-do-not-override-vn1oyg).ant-layout-header {
@@ -29,6 +29,7 @@
 :where(.css-dev-only-do-not-override-vn1oyg).ant-card .ant-card-body {
   padding: 0;
 }
+
 @keyframes scale-animation {
   0%,
   100% {

@@ -1,7 +1,7 @@
 import { Button, DatePicker, Form, Input, Typography } from "antd";
 import { useNavigate } from "react-router-dom";
-import { usePostCategoryDataMutation } from "../../redux/features/categorySlice/categoryApiSlice";
-import { Notify } from "../../utilities/toast/toast";
+import { usePostCategoryDataMutation } from "../../../redux/features/categorySlice/categoryApiSlice";
+import { Notify } from "../../../utilities/toast/toast";
 
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;

@@ -20,6 +20,13 @@ const imageGalleryApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["image gallery"],
     }),
+    deleteImageGalleryData: builder.mutation({
+      query: (id) => ({
+        url: `/lessons/${id}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["image gallery"],
+    }),
   }),
 });
 
@@ -27,4 +34,5 @@ export const {
   useGetImageGalleryDataQuery,
   useLazyGetImageGalleryDataQuery,
   usePostImageGalleryDataMutation,
+  useDeleteImageGalleryDataMutation,
 } = imageGalleryApiSlice;

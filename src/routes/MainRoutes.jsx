@@ -1,7 +1,9 @@
 import React from "react";
-import CreateCategory from "../components/CreateCategory/CreateCategory";
+import CategoryList from "../components/Admin/CategoryList/CategoryList";
+import CreateCategory from "../components/Admin/CreateCategory/CreateCategory";
 import ImageGallery from "../components/ImageGallery/ImageGallery";
 import UploadImageForm from "../components/UploadImageForm/UploadImageForm";
+import UserImageGallery from "../components/User/UserImageGallery/UserImageGallery";
 import MainLayout from "../layout/MainLayout";
 import AuthRedirect from "../utilities/AuthRedirect/AuthRedirect";
 
@@ -22,8 +24,16 @@ const MainRoutes = {
       element: <UploadImageForm />,
     },
     {
+      path: "/category_list",
+      element: <CategoryList />,
+    },
+    {
       path: "/create_category",
       element: <CreateCategory />,
+    },
+    {
+      path: "/my_images_list",
+      element: <UserImageGallery />,
     },
   ],
 };

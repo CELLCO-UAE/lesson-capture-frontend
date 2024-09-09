@@ -22,6 +22,13 @@ const categoryApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["category"],
     }),
+    deleteCategoryData: builder.mutation({
+      query: (id) => ({
+        url: `/categories/${id}/`,
+        method: "Delete",
+      }),
+      invalidatesTags: ["category"],
+    }),
     getCategoriesNames: builder.query({
       query: () => ({
         url: `/category-names/`,
@@ -37,4 +44,5 @@ export const {
   usePostCategoryDataMutation,
   useGetCategoriesNamesQuery,
   useLazyGetCategoriesNamesQuery,
+  useDeleteCategoryDataMutation,
 } = categoryApiSlice;

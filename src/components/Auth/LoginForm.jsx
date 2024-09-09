@@ -11,7 +11,6 @@ const LoginForm = () => {
   const [postLoginCredentials] = usePostLoginCredentialsMutation();
 
   const onFinish = async (values) => {
-    console.log("Received values of form: ", values);
     const data = {
       username: values.username,
       password: values.password,
@@ -20,8 +19,12 @@ const LoginForm = () => {
 
     if (response.data) {
       Cookies.set("authToken", response.data.access, { expires: 7 });
+
       Notify({ message: "Logged in successfully!" });
       navigate("/");
+    }
+    if (response.error) {
+      Notify({ icon: "error", message: response.error?.data?.detail });
     }
   };
 

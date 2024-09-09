@@ -23,9 +23,10 @@ import {
 } from "antd";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
-import { IoFilterOutline } from "react-icons/io5";
+import { IoFilterOutline, IoImagesOutline } from "react-icons/io5";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import logo1 from "../assets/lesson-capture-logo.svg";
+import { useGetUserInfosQuery } from "../redux/features/authSlice/authApiSlice";
 import { useLazyGetCategoriesNamesQuery } from "../redux/features/categorySlice/categoryApiSlice";
 import { useLazyGetUserNamesQuery } from "../redux/features/globalSlice/globalApiSlice";
 import { useLazyGetImageGalleryDataQuery } from "../redux/features/imageGallerySlice/imageGalleryApiSlice";
@@ -66,6 +67,10 @@ const MainLayout = () => {
 
   const token = Cookies.get("authToken");
 
+  const { data: userDetails, isSuccess: isUserDetailsSuccess } =
+    useGetUserInfosQuery(undefined, {
+      refetchOnMountOrArgChange: true,
+    });
   const [getCategoriesNames, { data: categoryNameList }] =
     useLazyGetCategoriesNamesQuery();
   const [getUserNames, { data: userNamesList }] = useLazyGetUserNamesQuery();
@@ -96,6 +101,13 @@ const MainLayout = () => {
   ];
 
   useEffect(() => {
+    if (isUserDetailsSuccess) {
+      console.log("data", userDetails);
+      Cookies.set("user", JSON.stringify(userDetails), { expires: 7 });
+    }
+  }, [userDetails, isUserDetailsSuccess]);
+
+  useEffect(() => {
     if (selectedItem || selectedCategory || uploadedBy) {
       getImageGalleryData({
         ...(uploadedBy !== "Uploaded By" && {
@@ -109,6 +121,8 @@ const MainLayout = () => {
             date_range: selectedItem,
           }),
         page: page,
+        page_size: 10,
+        ...(location.state?.from_my_images && { user: userDetails?.id }),
       });
     }
   }, [
@@ -119,6 +133,8 @@ const MainLayout = () => {
     imageGalleryData,
     dispatch,
     page,
+    location.state?.from_my_images,
+    userDetails?.id,
   ]);
 
   useEffect(() => {
@@ -142,16 +158,31 @@ const MainLayout = () => {
       {screens.xs && token && (
         <Menu.Item
           key="4"
-          icon={<FolderAddOutlined />}
+          icon={<IoImagesOutline />}
           onClick={() =>
-            navigate("/create_category", {
+            navigate("/my_images_list", {
               state: {
                 from_create_category: true,
               },
             })
           }
         >
-          Add Category
+          My Images
+        </Menu.Item>
+      )}
+      {screens.xs && token && (
+        <Menu.Item
+          key="4"
+          icon={<FolderAddOutlined />}
+          onClick={() =>
+            navigate("/category_list", {
+              state: {
+                from_create_category: true,
+              },
+            })
+          }
+        >
+          Category List
         </Menu.Item>
       )}
       {/* {token && (
@@ -170,6 +201,7 @@ const MainLayout = () => {
           icon={<LogoutOutlined />}
           onClick={() => {
             Cookies.remove("authToken"), navigate("/");
+            Cookies.remove("user"), navigate("/");
           }}
         >
           Logout
@@ -230,13 +262,16 @@ const MainLayout = () => {
           top: 0,
           zIndex: 1,
           width: "100%",
-          background: "#fff",
+          height: "100px",
+          // background: "#fff",
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
           padding: screens.xs ? "0 8px" : "0 50px",
+          background: "linear-gradient(145deg, #84D6EE, #10BCE4)",
         }}
+        className="header-image"
       >
         <div
           style={{
@@ -267,21 +302,38 @@ const MainLayout = () => {
             gap: ".8rem",
           }}
         >
-          {!screens.xs && (
+          {!screens.xs && token && (
             <Button
               size="medium"
               style={{
                 border: "none",
               }}
               onClick={() =>
-                navigate("/create_category", {
+                navigate("/my_images_list", {
+                  state: {
+                    from_my_images: true,
+                  },
+                })
+              }
+            >
+              My Images
+            </Button>
+          )}
+          {!screens.xs && token && (
+            <Button
+              size="medium"
+              style={{
+                border: "none",
+              }}
+              onClick={() =>
+                navigate("/category_list", {
                   state: {
                     from_create_category: true,
                   },
                 })
               }
             >
-              Add Category
+              Category List
             </Button>
           )}
           {!token && !screens.xs && (
@@ -306,10 +358,13 @@ const MainLayout = () => {
               <Avatar
                 size={40}
                 style={{
-                  background: "linear-gradient(135deg, #04befe, #6253e1)",
+                  background: "#FFC5C4",
                   verticalAlign: "middle",
-                  color: "#fff",
+                  color: "#000",
                   cursor: "pointer",
+                  border: "2px solid #fff",
+                  padding: 1,
+                  fontWeight: "bold",
                 }}
               >
                 USER
@@ -355,6 +410,8 @@ const MainLayout = () => {
         style={{
           padding: screens.xs ? "0 8px" : "0 48px",
           height: "100vh",
+          background: "#FFF",
+          // background: "#FFC5C4",
         }}
       >
         {screens.xs &&

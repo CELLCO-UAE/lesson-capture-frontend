@@ -63,13 +63,18 @@ const RegisterForm = () => {
         password: values.password,
       });
       if (loginResponse.data) {
-        console.log(loginResponse);
         Cookies.set("authToken", loginResponse.data.access, {
           expires: 7,
         });
         Notify({ message: "Account is created successfully!" });
+        navigate("/");
       }
-      navigate("/");
+      if (response.error) {
+        Notify({
+          icon: "error",
+          message: "Failed to create an account!",
+        });
+      }
     }
   };
   const prefixSelector = (
