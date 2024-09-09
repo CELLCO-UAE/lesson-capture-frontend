@@ -1,7 +1,6 @@
 :where(.css-dev-only-do-not-override-vn1oyg).ant-float-btn-default
   .ant-float-btn-body {
   background: linear-gradient(145deg, #84d6ee, #10bce4) !important;
-  color: #fff;
   border: 1px solid #fff !important;
 }
 
