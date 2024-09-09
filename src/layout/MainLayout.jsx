@@ -228,15 +228,12 @@ const MainLayout = () => {
   );
 
   const handleChangeDateRange = (value) => {
-    console.log("e", value);
     setSelectedItem(value);
   };
   const handleChange = (value) => {
-    console.log("e", value);
     setSelectedCategory(value);
   };
   const handleChangeUploadedBy = (value) => {
-    console.log("e", value);
     setUploadedBy(value);
   };
 
