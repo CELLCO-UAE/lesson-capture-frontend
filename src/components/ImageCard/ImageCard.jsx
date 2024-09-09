@@ -38,9 +38,11 @@ const ImageCard = ({ src, alt, data }) => {
 
   return (
     <Card
-      style={{
-        padding: "5px 5px 0",
-      }}
+      style={
+        {
+          // padding: "5px 5px 0",
+        }
+      }
     >
       <Image
         width={"100%"}
@@ -48,7 +50,7 @@ const ImageCard = ({ src, alt, data }) => {
         src={src} // Assuming your MOCK_DATA has imageUrl
         alt={alt}
         style={{
-          borderRadius: 5,
+          borderRadius: "5px 5px 0 0",
           objectFit: "cover",
           objectPosition: "center",
         }}
