@@ -11,7 +11,7 @@
 }
 
 .custom-float-button {
-  background: linear-gradient(135deg, #6253e1, #04befe);
+  background: linear-gradient(145deg, #84d6ee, #10bce4) !important;
   height: 70px;
   width: 70px;
   border: 1px solid #fff;
