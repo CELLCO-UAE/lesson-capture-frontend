@@ -3,12 +3,6 @@
   background: linear-gradient(145deg, #84d6ee, #10bce4) !important;
   border: 1px solid #fff !important;
 }
-:where(.css-dev-only-do-not-override-vn1oyg).ant-float-btn-default
-  .ant-float-btn-body
-  .ant-float-btn-content
-  .ant-float-btn-icon {
-  color: #fff !important;
-}
 
 .custom-float-button {
   background: linear-gradient(145deg, #84d6ee, #10bce4) !important;
