@@ -137,7 +137,7 @@ const MainLayout = () => {
     dispatch,
     page,
   ]);
-
+  console.log("hello");
   useEffect(() => {
     if (isSuccess) {
       dispatch(setImageGalleryData(imageGalleryData?.results));
