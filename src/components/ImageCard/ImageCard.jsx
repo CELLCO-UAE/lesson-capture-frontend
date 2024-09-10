@@ -1,6 +1,6 @@
 import { EyeOutlined } from "@ant-design/icons";
 import { Card, Image, Tooltip, Typography } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import { useLocation } from "react-router-dom";
 import { useDeleteImageGalleryDataMutation } from "../../redux/features/imageGallerySlice/imageGalleryApiSlice";
@@ -10,7 +10,6 @@ const { Title } = Typography;
 
 const ImageCard = ({ src, alt, data, page }) => {
   const location = useLocation();
-  const [isHover, setIsHover] = useState(false);
 
   // -----------delete api---------------
   const [deleteImageGalleryData, { isSuccess, isError }] =
@@ -194,39 +193,37 @@ const ImageCard = ({ src, alt, data, page }) => {
             </Title>
           </Tooltip>
         </div>
-        {isHover && (
-          <div
+        {/* <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            position: "absolute",
+            bottom: "60px",
+            left: "10px",
+          }}
+        >
+          <Title
+            level={5}
             style={{
-              display: "flex",
-              flexDirection: "column",
-              position: "absolute",
-              bottom: "60px",
-              left: "10px",
+              margin: "15px 5px 0",
+              color: "gray",
+              fontSize: "11px",
             }}
           >
-            <Title
-              level={5}
-              style={{
-                margin: "15px 5px 0",
-                color: "gray",
-                fontSize: "11px",
-              }}
-            >
-              Uploaded by
-            </Title>
-            <Title
-              // level={5}
-              style={{
-                margin: "0 5px 15px",
-                fontWeight: "bold",
-                color: "#FFF",
-                fontSize: "14px",
-              }}
-            >
-              {data?.user_fullname}
-            </Title>
-          </div>
-        )}
+            Uploaded by
+          </Title>
+          <Title
+            // level={5}
+            style={{
+              margin: "0 5px 15px",
+              fontWeight: "bold",
+              color: "#FFF",
+              fontSize: "14px",
+            }}
+          >
+            {data?.user_fullname}
+          </Title>
+        </div> */}
       </div>
 
       {/* {isHover && (
