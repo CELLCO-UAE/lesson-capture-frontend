@@ -1,0 +1,38 @@
+:where(.css-dev-only-do-not-override-vn1oyg).ant-float-btn-default
+  .ant-float-btn-body {
+  background: linear-gradient(145deg, #84d6ee, #10bce4) !important;
+  border: 1px solid #fff !important;
+}
+:where(.css-vn1oyg).ant-float-btn-default .ant-float-btn-body {
+  background: linear-gradient(145deg, #84d6ee, #10bce4) !important;
+}
+.custom-float-button {
+  background: linear-gradient(145deg, #84d6ee, #10bce4) !important;
+  height: 70px;
+  width: 70px;
+  /* color: #fff; */
+  border: 1px solid #fff;
+  animation: scale-animation 2s infinite;
+  transition: background 0.3s ease;
+}
+
+.custom-float-button:hover {
+  background: linear-gradient(145deg, #84d6ee, #10bce4);
+}
+
+:where(.css-dev-only-do-not-override-vn1oyg).ant-layout-header {
+  padding: 0;
+}
+:where(.css-dev-only-do-not-override-vn1oyg).ant-card .ant-card-body {
+  padding: 0;
+}
+
+@keyframes scale-animation {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2); /* Scale up to 120% of the original size */
+  }
+}

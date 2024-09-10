@@ -1,0 +1,7 @@
+.custom-toast-container {
+  z-index: 99999 !important; /* Ensure it has a high z-index */
+  position: fixed !important; /* Ensure it's positioned relative to the viewport */
+  top: 0;
+  right: 0;
+  line-height: 1.2;
+}
