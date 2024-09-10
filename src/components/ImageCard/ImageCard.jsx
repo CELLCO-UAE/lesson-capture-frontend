@@ -1,5 +1,6 @@
 import { EyeOutlined } from "@ant-design/icons";
 import { Card, Image, Tooltip, Typography } from "antd";
+import Cookies from "js-cookie";
 import React, { useEffect } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import { useLocation } from "react-router-dom";
@@ -10,6 +11,9 @@ const { Title } = Typography;
 
 const ImageCard = ({ src, alt, data, page }) => {
   const location = useLocation();
+  const userDetails = Cookies.get("user")
+    ? JSON.parse(Cookies.get("user"))
+    : null;
 
   // -----------delete api---------------
   const [deleteImageGalleryData, { isSuccess, isError }] =
@@ -24,7 +28,7 @@ const ImageCard = ({ src, alt, data, page }) => {
       await deleteImageGalleryData(id);
     }
   };
-  console.log("console");
+
   useEffect(() => {
     if (isSuccess) {
       Notify({ message: "Image is deleted successfully!" });
@@ -112,36 +116,38 @@ const ImageCard = ({ src, alt, data, page }) => {
               </div>
 
               {/* User Information */}
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  position: "absolute",
-                  bottom: "10px",
-                  left: "10px",
-                }}
-              >
-                <Title
-                  level={5}
+              {userDetails?.role === "admin" && (
+                <div
                   style={{
-                    margin: "15px 5px 0",
-                    color: "gray",
-                    fontSize: "11px",
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "absolute",
+                    bottom: "10px",
+                    left: "10px",
                   }}
                 >
-                  Uploaded by
-                </Title>
-                <Title
-                  style={{
-                    margin: "0 5px",
-                    fontWeight: "bold",
-                    color: "#FFF",
-                    fontSize: "14px",
-                  }}
-                >
-                  {data?.user_fullname}
-                </Title>
-              </div>
+                  <Title
+                    level={5}
+                    style={{
+                      margin: "15px 5px 0",
+                      color: "gray",
+                      fontSize: "11px",
+                    }}
+                  >
+                    Uploaded by
+                  </Title>
+                  <Title
+                    style={{
+                      margin: "0 5px",
+                      fontWeight: "bold",
+                      color: "#FFF",
+                      fontSize: "14px",
+                    }}
+                  >
+                    {data?.user_fullname}
+                  </Title>
+                </div>
+              )}
             </div>
           ), // Custom preview mask
         }}
