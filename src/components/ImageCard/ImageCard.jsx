@@ -88,8 +88,8 @@ const ImageCard = ({ src, alt, data, page }) => {
                   right: "10px",
                 }}
                 onClick={(e) => {
-                  e.stopPropagation(); // Prevents triggering the image preview
-                  handleDelete(data?.id); // Calls delete function
+                  e.stopPropagation();
+                  handleDelete(data?.id);
                 }}
               >
                 <Tooltip title="Delete">
@@ -149,7 +149,7 @@ const ImageCard = ({ src, alt, data, page }) => {
                 </div>
               )}
             </div>
-          ), // Custom preview mask
+          ),
         }}
       />
 
@@ -157,7 +157,6 @@ const ImageCard = ({ src, alt, data, page }) => {
         style={{
           display: "flex",
           flexDirection: "column",
-          // justifyContent: "space-between",
         }}
       >
         <div
@@ -174,9 +173,8 @@ const ImageCard = ({ src, alt, data, page }) => {
             <Title
               level={5}
               style={{
-                // margin: "15px 5px 0",
                 padding: "0 5px",
-                // color: "gray",
+
                 fontSize: "11px",
               }}
             >
@@ -187,7 +185,6 @@ const ImageCard = ({ src, alt, data, page }) => {
             <Title
               level={5}
               style={{
-                // margin: "0 5px 15px",
                 padding: "0 5px",
                 fontWeight: "bold",
               }}
