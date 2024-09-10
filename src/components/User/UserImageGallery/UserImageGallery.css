@@ -11,6 +11,10 @@
   align-items: center;
 }
 
+:where(.css-vn1oyg).ant-card .ant-card-body {
+  padding: 0;
+}
+
 @media (max-width: 1200px) {
   .image-gallery {
     grid-template-columns: repeat(4, 1fr);
