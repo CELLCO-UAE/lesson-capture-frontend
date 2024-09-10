@@ -26,20 +26,15 @@ const UploadImageForm = () => {
   const [getCategoriesNames, { data: categoryNameList }] =
     useLazyGetCategoriesNamesQuery();
 
-  console.log("ca", categoryNameList);
-
   const normFile = (e) => {
     if (Array.isArray(e)) {
       return e;
     }
-    console.log(e?.fileList);
     setFile(e?.fileList[0]);
     return e?.fileList;
   };
 
   const onFinish = async (values) => {
-    console.log("values", values.image?.originalFileObj);
-    console.log("values image", values.image[0].originFileObj);
     const formData = new FormData();
     formData.append("title", values.title);
     formData.append("category", values.category);
@@ -47,8 +42,6 @@ const UploadImageForm = () => {
     if (file) {
       formData.append("image", values.image[0].originFileObj);
     }
-
-    console.log(formData);
 
     const response = await postImageGalleryData(formData);
 

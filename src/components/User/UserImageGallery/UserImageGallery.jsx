@@ -5,10 +5,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { useLocation } from "react-router-dom";
 import { useLazyGetImageGalleryDataQuery } from "../../../redux/features/imageGallerySlice/imageGalleryApiSlice";
-import {
-  setImageGalleryCount,
-  setImageGalleryData,
-} from "../../../redux/features/imageGallerySlice/imageGallerySlice";
+import { setImageGalleryData } from "../../../redux/features/imageGallerySlice/imageGallerySlice";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import ImageCard from "../../ImageCard/ImageCard";
 
@@ -24,8 +21,6 @@ const UserImageGallery = () => {
   const [hasMore, setHasMore] = useState(true);
   const location = useLocation();
   const user = Cookies.get("user") ? JSON.parse(Cookies.get("user")) : null;
-  console.log("user", user);
-  console.log("lcoa", location);
 
   const { ref, inView } = useInView({
     threshold: 1,
@@ -49,27 +44,46 @@ const UserImageGallery = () => {
     useLazyGetImageGalleryDataQuery();
 
   const fetchGalleryData = useCallback(async () => {
+    console.log("outside");
+
     setLoading(true);
-    if (imageGalleryData?.length !== imageGalleryCount) {
+    const totalPages = Math.ceil(imageGalleryCount / 10);
+    console.log("Total Pages:", totalPages);
+
+    if (page <= totalPages) {
       const response = await getImageGalleryData({
         page: page,
         page_size: 10,
-        // ...(location.state?.from_my_images && { user: user?.id }),
       });
+
       if (response.data) {
-        setLoading(false);
-        dispatch(
-          setImageGalleryData([...imageGalleryData, ...response.data.results])
+        const newResults = response.data.results;
+        console.log(`New Results for Page ${page}:`, newResults);
+
+        if (!newResults || newResults.length === 0) {
+          console.log(`No data returned for Page ${page}`);
+          setLoading(false);
+          return;
+        }
+
+        const galleryMap = new Map(
+          imageGalleryData.map((item) => [item.id, item])
         );
-        setHasMore(response.data.results.length > 0);
-        dispatch(setImageGalleryCount(response.data.count));
+
+        newResults.forEach((item) => {
+          galleryMap.set(item.id, item);
+        });
+
+        const updatedGalleryData = Array.from(galleryMap.values());
+
+        dispatch(setImageGalleryData(updatedGalleryData));
+
+        setHasMore(page < totalPages);
       }
     }
-  }, [page, getImageGalleryData, location.state?.from_my_images, user?.id]);
 
-  useEffect(() => {
-    fetchGalleryData();
-  }, [fetchGalleryData, dispatch]);
+    setLoading(false);
+  }, [page, getImageGalleryData, dispatch, imageGalleryCount]);
 
   useEffect(() => {
     if (inView && hasMore && !loading) {
@@ -77,25 +91,33 @@ const UserImageGallery = () => {
     }
   }, [inView, hasMore, loading]);
 
+  useEffect(() => {
+    fetchGalleryData();
+  }, [fetchGalleryData, page, imageData]);
+
   return (
     <>
       {imageGalleryData?.length > 0 ? (
         <div className="image-gallery">
           <Image.PreviewGroup
-            preview={{
-              onChange: (current, prev) =>
-                console.log(`current index: ${current}, prev index: ${prev}`),
-            }}
+          // preview={{
+          //   onChange: (current, prev) =>
+          //     console.log(`current index: ${current}, prev index: ${prev}`),
+          // }}
           >
-            {imageGalleryData?.map((item, index) => (
-              <div ref={ref} key={index}>
-                <ImageCard
-                  src={item.image}
-                  alt={`Image ${index}`}
-                  data={item}
-                />
-              </div>
-            ))}
+            {imageGalleryData?.map((item, index) => {
+              const isLastImage = imageGalleryData.length === index + 1;
+              return (
+                <div ref={isLastImage ? ref : null} key={index}>
+                  <ImageCard
+                    src={item.image}
+                    alt={`Image ${index}`}
+                    data={item}
+                    page={page}
+                  />
+                </div>
+              );
+            })}
           </Image.PreviewGroup>
         </div>
       ) : (
@@ -104,7 +126,7 @@ const UserImageGallery = () => {
           description="No Images Found"
         />
       )}
-      {loading && imageGalleryData?.length !== imageGalleryCount && (
+      {loading && (
         <LoadingOutlined
           style={{
             fontSize: "50px",

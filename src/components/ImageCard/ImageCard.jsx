@@ -7,7 +7,7 @@ import { ConfirmationNotify, Notify } from "../../utilities/toast/toast";
 const { Meta } = Card;
 const { Title } = Typography;
 
-const ImageCard = ({ src, alt, data }) => {
+const ImageCard = ({ src, alt, data, page }) => {
   const location = useLocation();
 
   // -----------delete api---------------

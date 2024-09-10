@@ -108,7 +108,6 @@ const MainLayout = () => {
 
   useEffect(() => {
     if (isUserDetailsSuccess) {
-      console.log("data", userDetails);
       Cookies.set("user", JSON.stringify(userDetails), { expires: 7 });
     }
   }, [userDetails, isUserDetailsSuccess]);
@@ -128,7 +127,6 @@ const MainLayout = () => {
           }),
         page: page,
         page_size: 10,
-        ...(location.state?.from_my_images && { user: userDetails?.id }),
       });
     }
   }, [
@@ -136,11 +134,8 @@ const MainLayout = () => {
     uploadedBy,
     selectedCategory,
     selectedItem,
-    imageGalleryData,
     dispatch,
     page,
-    location.state?.from_my_images,
-    userDetails?.id,
   ]);
 
   useEffect(() => {
@@ -148,11 +143,12 @@ const MainLayout = () => {
       dispatch(setImageGalleryData(imageGalleryData?.results));
       dispatch(setImageGalleryCount(imageGalleryData?.count));
     }
-  }, [dispatch, imageGalleryData, isSuccess]);
+  }, [dispatch, imageGalleryData?.results, imageGalleryData?.count, isSuccess]);
 
   const handleReset = async () => {
     await getImageGalleryData({
       page: 1,
+      page_size: 10,
     });
     setUploadedBy("Uploaded By");
     setSelectedCategory("Select a category");
@@ -248,8 +244,6 @@ const MainLayout = () => {
       },
     });
   };
-
-  console.log(selectedItem, selectedCategory, uploadedBy);
 
   return (
     <Layout
