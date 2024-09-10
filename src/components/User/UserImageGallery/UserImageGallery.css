@@ -16,15 +16,20 @@
   overflow: hidden;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1440px) {
   .image-gallery {
     grid-template-columns: repeat(4, 1fr);
+  }
+}
+@media (max-width: 1200px) {
+  .image-gallery {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
 @media (max-width: 900px) {
   .image-gallery {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 

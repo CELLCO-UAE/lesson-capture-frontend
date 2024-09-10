@@ -1,5 +1,6 @@
+import { EyeOutlined } from "@ant-design/icons";
 import { Card, Image, Tooltip, Typography } from "antd";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import { useLocation } from "react-router-dom";
 import { useDeleteImageGalleryDataMutation } from "../../redux/features/imageGallerySlice/imageGalleryApiSlice";
@@ -9,6 +10,7 @@ const { Title } = Typography;
 
 const ImageCard = ({ src, alt, data, page }) => {
   const location = useLocation();
+  const [isHover, setIsHover] = useState(false);
 
   // -----------delete api---------------
   const [deleteImageGalleryData, { isSuccess, isError }] =
@@ -36,18 +38,33 @@ const ImageCard = ({ src, alt, data, page }) => {
     }
   }, [isSuccess, isError]);
 
+  const truncatedText = (text, type) => {
+    let characterLimit;
+    if (type === "category") {
+      characterLimit = 8;
+    }
+    if (type === "title") {
+      characterLimit = 14;
+    }
+    const updatedText =
+      text?.length >= characterLimit
+        ? text.substring(0, characterLimit) + "..."
+        : text;
+
+    return updatedText;
+  };
+
   return (
     <Card
-      style={
-        {
-          // padding: "5px 5px 0",
-        }
-      }
+      style={{
+        position: "relative",
+        // padding: "5px 5px 0",
+      }}
     >
       <Image
         width={"100%"}
         height={"250px"}
-        src={src} // Assuming your MOCK_DATA has imageUrl
+        src={src}
         alt={alt}
         style={{
           borderRadius: "5px 5px 0 0",
@@ -55,88 +72,188 @@ const ImageCard = ({ src, alt, data, page }) => {
           objectPosition: "center",
           overflow: "hidden",
         }}
+        preview={{
+          mask: (
+            <div style={{ color: "#fff" }}>
+              {/* Delete Button */}
+              <div
+                style={{
+                  display: "flex",
+                  padding: ".5rem",
+                  position: "absolute",
+                  top: "10px",
+                  right: "10px",
+                }}
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevents triggering the image preview
+                  handleDelete(data?.id); // Calls delete function
+                }}
+              >
+                <Tooltip title="Delete">
+                  <MdDeleteOutline
+                    style={{
+                      fontSize: "1.2rem",
+                      fontWeight: "bold",
+                      color: "red",
+                      cursor: "pointer",
+                    }}
+                  />
+                </Tooltip>
+              </div>
+
+              {/* Click to Preview Text */}
+              <div>
+                <EyeOutlined
+                  style={{
+                    color: "#fff",
+                    marginRight: "3px",
+                  }}
+                />
+                Preview
+              </div>
+
+              {/* User Information */}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  position: "absolute",
+                  bottom: "10px",
+                  left: "10px",
+                }}
+              >
+                <Title
+                  level={5}
+                  style={{
+                    margin: "15px 5px 0",
+                    color: "gray",
+                    fontSize: "11px",
+                  }}
+                >
+                  Uploaded by
+                </Title>
+                <Title
+                  style={{
+                    margin: "0 5px",
+                    fontWeight: "bold",
+                    color: "#FFF",
+                    fontSize: "14px",
+                  }}
+                >
+                  {data?.user_fullname}
+                </Title>
+              </div>
+            </div>
+          ), // Custom preview mask
+        }}
       />
 
       <div
         style={{
           display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
+          flexDirection: "column",
+          // justifyContent: "space-between",
         }}
       >
         <div
           style={{
             display: "flex",
-            flexDirection: "column",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          <Title
-            level={5}
-            style={{
-              margin: "15px 5px 0",
-              color: "gray",
-              fontSize: "11px",
-            }}
+          <Tooltip
+            title={data?.category_name?.length >= 7 ? data?.category_name : ""}
           >
-            {data?.category_name}
-          </Title>
-          <Title
-            level={5}
-            style={{
-              margin: "0 5px 15px",
-              fontWeight: "bold",
-            }}
-          >
-            {data?.title}
-          </Title>
+            <Title
+              level={5}
+              style={{
+                // margin: "15px 5px 0",
+                padding: "0 5px",
+                // color: "gray",
+                fontSize: "11px",
+              }}
+            >
+              {truncatedText(data?.category_name, "category")}
+            </Title>
+          </Tooltip>
+          <Tooltip title={data?.title?.length >= 12 ? data?.title : ""}>
+            <Title
+              level={5}
+              style={{
+                // margin: "0 5px 15px",
+                padding: "0 5px",
+                fontWeight: "bold",
+              }}
+              ellipsis={{
+                width: "7px",
+              }}
+            >
+              {truncatedText(data?.title, "title")}
+            </Title>
+          </Tooltip>
         </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <Title
-            level={5}
+        {isHover && (
+          <div
             style={{
-              margin: "15px 5px 0",
-              color: "gray",
-              fontSize: "11px",
+              display: "flex",
+              flexDirection: "column",
+              position: "absolute",
+              bottom: "60px",
+              left: "10px",
             }}
           >
-            Uploaded by
-          </Title>
-          <Title
-            level={5}
-            style={{
-              margin: "0 5px 15px",
-              fontWeight: "bold",
-            }}
-          >
-            {data?.user_fullname}
-          </Title>
-        </div>
+            <Title
+              level={5}
+              style={{
+                margin: "15px 5px 0",
+                color: "gray",
+                fontSize: "11px",
+              }}
+            >
+              Uploaded by
+            </Title>
+            <Title
+              // level={5}
+              style={{
+                margin: "0 5px 15px",
+                fontWeight: "bold",
+                color: "#FFF",
+                fontSize: "14px",
+              }}
+            >
+              {data?.user_fullname}
+            </Title>
+          </div>
+        )}
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          padding: ".5rem",
-        }}
-      >
-        <Tooltip title="Delete">
-          <MdDeleteOutline
-            style={{
-              fontSize: "1.2rem",
-              fontWeight: "bold",
-              color: "red",
-              cursor: "pointer",
-            }}
-            onClick={() => handleDelete(data?.id)}
-          />
-        </Tooltip>
-      </div>
+      {/* {isHover && (
+        <div
+          style={{
+            display: "flex",
+            // flexDirection: "column",
+            // justifyContent: "flex-end",
+            padding: ".5rem",
+            position: "absolute",
+            top: "10px",
+            right: "10px",
+          }}
+        >
+          <Tooltip title="Delete">
+            <MdDeleteOutline
+              style={{
+                fontSize: "1.2rem",
+                fontWeight: "bold",
+                color: "red",
+                cursor: "pointer",
+              }}
+              onClick={() => handleDelete(data?.id)}
+            />
+          </Tooltip>
+        </div>
+      )} */}
     </Card>
   );
 };
