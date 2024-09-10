@@ -23,7 +23,7 @@ const ImageCard = ({ src, alt, data, page }) => {
       await deleteImageGalleryData(id);
     }
   };
-
+  console.log("console");
   useEffect(() => {
     if (isSuccess) {
       Notify({ message: "Image is deleted successfully!" });
