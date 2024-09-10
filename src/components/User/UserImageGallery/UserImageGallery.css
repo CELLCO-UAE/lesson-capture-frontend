@@ -13,6 +13,7 @@
 
 :where(.css-vn1oyg).ant-card .ant-card-body {
   padding: 0;
+  overflow: hidden;
 }
 
 @media (max-width: 1200px) {
